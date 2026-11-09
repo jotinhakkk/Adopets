@@ -303,9 +303,6 @@ k6 run --summary-export=resultados/2026-11-09/cadastro-resumo.json --out json=re
 node analisar.js resultados/2026-11-09/login.json
 node analisar.js resultados/2026-11-09/cadastro.json
 
-# Gera os gráficos em graficos/2026-11-09/
-pip install matplotlib
-python gerar_graficos.py 2026-11-09
 ```
 
 Opções dos scripts k6 (`-e NOME=valor`): `BASE_URL` (padrão `http://localhost:3000`), `STAGES` (padrão `1,10,50,100`) e `THINK_TIME` (padrão `0`).
