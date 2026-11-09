@@ -86,8 +86,8 @@ Os dois serviços atenderam ao limite de exemplo (`p95 < 1000 ms` e `erros < 1 %
 1. **Clone o repositório:**
 
    ```bash
-   git clone <url-do-repositorio>
-   cd <pasta-do-repositorio>
+   git https://github.com/jotinhakkk/Adopets
+   cd Adopets
    ```
 
 2. **Instale as dependências:**
@@ -98,7 +98,6 @@ Os dois serviços atenderam ao limite de exemplo (`p95 < 1000 ms` e `erros < 1 %
 
 3. **Configure o banco de dados MySQL.** Copie `B.arquivo.env` para `.env` e preencha as credenciais (`DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`, `PORT` e `SESSION_SECRET`). Com o MySQL em execução, o servidor cria e popula o banco `adopetz` automaticamente na primeira inicialização, a partir de `mysql/Adopetz.sql`.
 
-   > ⚠️ Esse script começa com `DROP DATABASE IF EXISTS adopetz;`. Se for executá-lo manualmente, ele apaga o banco existente.
 
 4. **Inicie o servidor:**
 
@@ -120,7 +119,7 @@ Execute a partir da pasta `testes-de-carga/` e crie antes a pasta do dia (por ex
 cd testes-de-carga
 
 # Login
-k6 run -e LOGIN_EMAIL=usuario@exemplo.com -e LOGIN_SENHA=sua_senha --summary-export=resultados/2026-11-09/login-resumo.json --out json=resultados/2026-11-09/login.json login.js
+k6 run -e LOGIN_EMAIL=karenzinha@email.com -e LOGIN_SENHA=senha123 --summary-export=resultados/2026-11-09/login-resumo.json --out json=resultados/2026-11-09/login.json login.js
 
 # Cadastro
 k6 run --summary-export=resultados/2026-11-09/cadastro-resumo.json --out json=resultados/2026-11-09/cadastro.json cadastro.js
@@ -129,9 +128,6 @@ k6 run --summary-export=resultados/2026-11-09/cadastro-resumo.json --out json=re
 node analisar.js resultados/2026-11-09/login.json
 node analisar.js resultados/2026-11-09/cadastro.json
 
-# Gráficos em graficos/2026-11-09/
-pip install matplotlib
-python gerar_graficos.py 2026-11-09
 ```
 
 O teste de cadastro insere cerca de 300 mil usuários de teste. A limpeza está descrita na [seção 8 do relatório](RELATORIO.md#8-como-reproduzir).
