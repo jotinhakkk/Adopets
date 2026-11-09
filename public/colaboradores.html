@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cadastro de ONGs - AdoPetz</title>
+  <link rel="stylesheet" href="css/home.css">
+  <style>
+    body {
+      background: #f5f7fa;
+      color: #333;
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 40px auto;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #1e3a5f;
+      margin-bottom: 30px;
+      font-size: 2.5rem;
+    }
+
+    .cadastro-section {
+      background-color: #ffffff;
+      border-radius: 18px;
+      padding: 40px;
+      text-align: center;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      margin-bottom: 40px;
+    }
+
+    .cadastro-section h2 {
+      color: #1e3a5f;
+      font-size: 2rem;
+      margin-bottom: 15px;
+    }
+
+    .cadastro-section p {
+      color: #555;
+      font-size: 1.1rem;
+      margin-bottom: 25px;
+    }
+
+    .cadastro-section button {
+      background: #1e3a5f;
+      color: #fff;
+      padding: 14px 36px;
+      font-size: 1.1rem;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      font-weight: bold;
+    }
+
+    .cadastro-section button:hover {
+      background-color: #324a7a;
+    }
+
+    .cadastro-section img {
+      width: 100%;
+      max-width: 520px;
+      margin: 25px auto;
+      border-radius: 14px;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+    }
+
+    .feed-container {
+      margin-top: 40px;
+    }
+
+    .post-card {
+      background-color: #ffffff;
+      border-radius: 14px;
+      margin-bottom: 30px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      transition: transform 0.3s ease;
+    }
+
+    .post-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .post-header {
+      display: flex;
+      align-items: center;
+      padding: 15px 20px;
+    }
+
+    .post-header img {
+      width: 55px;
+      height: 55px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-right: 15px;
+    }
+
+    .user-info h4 {
+      margin: 0;
+      font-size: 18px;
+      color: #1e3a5f;
+    }
+
+    .user-info span {
+      font-size: 13px;
+      color: #888;
+    }
+
+    .post-image img {
+      width: 100%;
+      height: 280px;
+      object-fit: cover;
+    }
+
+    .post-content {
+      padding: 18px 20px;
+      color: #444;
+      font-size: 15.5px;
+      line-height: 1.6;
+    }
+
+    .post-actions {
+      display: flex;
+      justify-content: space-around;
+      padding: 12px 0;
+      border-top: 1px solid #eee;
+      color: #666;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .post-actions div:hover {
+      color: #1e3a5f;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 999;
+      padding-top: 100px;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.7);
+    }
+
+    .modal-content {
+      background-color: #ffffff;
+      margin: auto;
+      padding: 30px;
+      border-radius: 14px;
+      width: 90%;
+      max-width: 500px;
+      color: #333;
+      position: relative;
+    }
+
+    .close {
+      color: #999;
+      position: absolute;
+      top: 10px;
+      right: 20px;
+      font-size: 28px;
+      cursor: pointer;
+    }
+
+    label {
+      display: block;
+      margin-top: 14px;
+      font-size: 1rem;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background-color: #f9f9f9;
+      color: #333;
+      font-size: 1rem;
+    }
+
+    button[type="submit"] {
+      background-color: #1e3a5f;
+      color: #fff;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      margin-top: 20px;
+      width: 100%;
+      font-weight: bold;
+      font-size: 1rem;
+    }
+
+    button[type="submit"]:hover {
+      background-color: #324a7a;
+    }
+
+    footer {
+      background: #1e3a5f;
+      color: #fff;
+      text-align: center;
+      padding: 20px;
+      font-size: 0.9rem;
+    }
+  </style>
+  
+ <header class="cabecalho">
+        <div class="container-cabecalho">
+            <div class="logo">
+                <img class="img-cabecalho" src="Images/Adopt 500x500.png" alt="Logo AdoPetz">
+                <h2 class="texto-logo">AdoPetz</h2>
+            </div>
+
+            <nav class="menu-nav">
+  <ul class="lista-menu-nav">
+    <li class="item-menu-nav"><a href="homelogada.html">Início</a></li>
+    <li class="item-menu-nav"><a href="catalogo.html">Adote</a></li>
+
+    <li class="item-menu-nav dropdown">
+      <a href="#" class="dropbtn">Recursos</a>
+      <ul class="dropdown-content">
+        <li><a href="calendario.html">Calendário</a></li>
+        <li><a href="blog.html">Blog</a></li>
+        <li><a href="denuncia.html">Denuncie</a></li>
+      </ul>
+    </li>
+
+    <li class="item-menu-nav dropdown">
+      <a href="#" class="dropbtn">Parceiro</a>
+      <ul class="dropdown-content">
+        <li><a href="itens.html">Loja</a></li>
+        <li><a href="mapa.html">Mapa</a></li>
+      </ul>
+    </li>
+
+    <li class="item-menu-nav dropdown">
+      <a href="#" class="dropbtn">Institucional</a>
+      <ul class="dropdown-content">
+        <li><a href="sobre-nos.html">Sobre Nós</a></li>
+        <li><a href="contribua.html">Contribua Conosco</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+            <div class="perfil-usuario" id="perfil-usuario">
+                <img class="foto-usuario" src="Images/meuamor.jpg" alt="Foto do Usuário">
+                <span class="nome-usuario">Karen</span>
+            </div>
+
+            <div class="mini-navbar" id="mini-navbar" style="display: none;">
+                <ul>
+                    <li><a href="perfil.html">Exibir Perfil</a></li>
+                    <li><a href="meus_anuncios.html">Meus Anuncios</a></li>
+                    <li><a href="chats.html">Meus Chats</a></li>
+                    <li><a href="home.html">Sair</a></li>
+                </ul>
+            </div>
+        </div>
+    </header>
+</head>
+<body>
+  <div class="container">
+    <h1>Cadastro de ONGs</h1>
+    <div class="cadastro-section">
+      <h2>Divulgue oportunidades de voluntariado</h2>
+      <p>ONGs podem se cadastrar para divulgar vagas de ajuda, eventos e projetos. Conecte-se com voluntários dispostos a fazer a diferença!</p>
+      <img src="../public/Images/ong1.jpg" alt="ONG e Voluntários">
+      <br>
+      <button id="openModal">Cadastrar ONG</button>
+    </div>
+
+    <div class="feed-container">
+      <!-- Anúncios (incluindo os anteriores e novos) -->
+      <div class="post-card">
+        <div class="post-header">
+          <img src="https://randomuser.me/api/portraits/women/65.jpg" alt="ONG Vira Lata Feliz">
+          <div class="user-info">
+            <h4>ONG Vira Lata Feliz</h4>
+            <span>1 hora atrás</span>
+          </div>
+        </div>
+        <div class="post-image">
+          <img src="https://images.unsplash.com/photo-1530700131180-d43d9b8cc41f?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8cGFzc2VpbyUyMGNhY2hvcnJvfGVufDB8fDB8fHww" alt="Cachorros">
+        </div>
+        <div class="post-content">
+          <p>🐶 Estamos recrutando voluntários para auxiliar nos cuidados diários dos animais! Local: Zona Norte.</p>
+          <p>📧 Contato: contato@veralatafeliz.org</p>
+        </div>
+        <div class="post-actions">
+          <div>👍 Curtir</div>
+          <div>💬 Comentar</div>
+          <div>🔁 Compartilhar</div>
+        </div>
+      </div>
+
+      <div class="post-card">
+        <div class="post-header">
+          <img src="https://randomuser.me/api/portraits/women/22.jpg" alt="ONG Gatinhos da Rua">
+          <div class="user-info">
+            <h4>ONG Gatinhos da Rua</h4>
+            <span>Hoje</span>
+          </div>
+        </div>
+        <div class="post-image">
+          <img src="https://images.unsplash.com/photo-1558618047-f4b511aae74d?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8YWRvJUMzJUE3JUMzJUEzbyUyMGFuaW1hbHxlbnwwfHwwfHx8MA%3D%3D" alt="Gatos">
+        </div>
+        <div class="post-content">
+          <p>😻 Precisamos de ajuda com feiras de adoção aos domingos! Local: Praça da Liberdade.</p>
+          <p>📧 Contato: gatinhosdarua@gmail.com</p>
+        </div>
+        <div class="post-actions">
+          <div>👍 Curtir</div>
+          <div>💬 Comentar</div>
+          <div>🔁 Compartilhar</div>
+        </div>
+      </div>
+
+      <div class="post-card">
+        <div class="post-header">
+          <img src="https://randomuser.me/api/portraits/men/55.jpg" alt="ONG Patas Unidas">
+          <div class="user-info">
+            <h4>ONG Patas Unidas</h4>
+            <span>Ontem</span>
+          </div>
+        </div>
+        <div class="post-image">
+          <img src="https://images.unsplash.com/photo-1637094408647-0d81d08f81b5?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Y29sYWJvcmFkb3J8ZW58MHx8MHx8fDA%3D" alt="Voluntariado Pet" alt="Evento de adoção">
+        </div>
+        <div class="post-content">
+          <p>📢 Precisamos de voluntários para organizar nosso próximo evento de adoção! Local: Shopping PetAmor.</p>
+          <p>📧 Contato: patasunidas@apoie.org</p>
+        </div>
+        <div class="post-actions">
+          <div>👍 Curtir</div>
+          <div>💬 Comentar</div>
+          <div>🔁 Compartilhar</div>
+        </div>
+      </div>
+
+      <div class="post-card">
+        <div class="post-header">
+          <img src="https://randomuser.me/api/portraits/women/33.jpg" alt="ONG Lar Felino">
+          <div class="user-info">
+            <h4>ONG Lar Felino</h4>
+            <span>2 dias atrás</span>
+          </div>
+        </div>
+        <div class="post-image">
+          <img src="https://images.unsplash.com/photo-1511044568932-338cba0ad803?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8Z2F0b3xlbnwwfHwwfHx8MA%3D%3D" alt="Gatinho resgatado">
+        </div>
+        <div class="post-content">
+          <p>🏡 Estamos buscando lares temporários para 12 gatinhos resgatados. Local: Zona Oeste.</p>
+          <p>📧 Contato: lar.felino@ajude.org</p>
+        </div>
+        <div class="post-actions">
+          <div>👍 Curtir</div>
+          <div>💬 Comentar</div>
+          <div>🔁 Compartilhar</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="cadastroModal" class="modal">
+    <div class="modal-content">
+      <span class="close" id="closeModal">&times;</span>
+      <h2>Formulário da ONG</h2>
+      <form>
+        <label for="nome">Nome da ONG:</label>
+        <input type="text" id="nome" placeholder="Ex: Patinhas Unidas" required>
+
+        <label for="nome">Cnpj:</label>
+        <input type="text" id="cnpj" placeholder="00.000.000/0000-00" required>
+
+        <label for="email">Email de Contato:</label>
+        <input type="email" id="email" placeholder="contato@exemplo.org" required>
+
+        <label for="telefone">Telefone:</label>
+        <input type="tel" id="telefone" placeholder="(00) 00000-0000">
+
+        <label for="cidade">Cidade / Estado:</label>
+        <input type="text" id="cidade" placeholder="Ex: Rio de Janeiro - RJ">
+
+        <label for="descricao">Sobre a ONG:</label>
+        <textarea id="descricao" rows="4" placeholder="Fale brevemente sobre sua missão, história e como deseja ajuda."></textarea>
+
+        <button type="submit">Enviar Cadastro</button>
+      </form>
+    </div>
+  </div>
+
+  <footer>
+    <p>AdoPetz &copy; Todos os direitos reservados</p>
+  </footer>
+
+  <script>
+    const modal = document.getElementById("cadastroModal");
+    const btn = document.getElementById("openModal");
+    const span = document.getElementById("closeModal");
+
+    btn.onclick = () => modal.style.display = "block";
+    span.onclick = () => modal.style.display = "none";
+    window.onclick = (event) => {
+      if (event.target == modal) {
+        modal.style.display = "none";
+      }
+    }
+    
+    document.addEventListener("DOMContentLoaded", () => {
+        const perfilUsuario = document.getElementById("perfil-usuario");
+        const miniNavbar = document.getElementById("mini-navbar");
+
+        perfilUsuario.addEventListener("click", (e) => {
+            e.stopPropagation();
+            miniNavbar.style.display = (miniNavbar.style.display === "block") ? "none" : "block";
+        });
+
+        document.addEventListener("click", (e) => {
+            if (!miniNavbar.contains(e.target) && e.target !== perfilUsuario && !perfilUsuario.contains(e.target)) {
+                miniNavbar.style.display = "none";
+            }
+        });
+
+        const linksMiniNavbar = miniNavbar.querySelectorAll("a");
+        linksMiniNavbar.forEach(link => {
+            link.addEventListener("click", () => {
+                miniNavbar.style.display = "none";
+            });
+        }); });
+      
+  </script>
+</body>
+</html>

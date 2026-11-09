@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Catálogo de Animais</title>
+<link rel="shortcut icon" href="Images/Adopt 500x500.png" type="image/x-icon" />
+<style>
+  body {
+    font-family: 'Inter', sans-serif;
+    margin: 0; padding: 0;
+    background-color: #1e3a5f;
+    
+  }
+  .header {
+    background-color: #324a7a;
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  .header img.logo {
+    width: 60px;
+  }
+  .header .header-buttons a {
+    background: #1e90ff;
+    color: white;
+    text-decoration: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    transition: background 0.3s;
+  }
+  .header .header-buttons a:hover {
+    background: #156ecf;
+  }
+
+  .container {
+    display: flex;
+    padding: 20px;
+    gap: 20px;
+    min-height: calc(100vh - 60px);
+  }
+
+  /* FILTRO LATERAL */
+  .filtro-lateral {
+    width: 280px;
+    background: #324a7a;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.3);
+  }
+  .filtro-lateral h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #1e90ff;
+  }
+  .filtro-group {
+    margin-bottom: 20px;
+  }
+  .filtro-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #a9b2c3;
+  }
+  .checkbox-group label {
+    font-weight: normal;
+    color: #dbe3f0;
+    cursor: pointer;
+    user-select: none;
+  }
+  .checkbox-group input[type="checkbox"] {
+    margin-right: 8px;
+    cursor: pointer;
+  }
+  button.btn-aplicar-filtro {
+    background: #1e90ff;
+    color: white;
+    border: none;
+    padding: 12px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    width: 100%;
+    font-weight: 600;
+    transition: background 0.3s;
+  }
+  button.btn-aplicar-filtro:hover {
+    background: #156ecf;
+  }
+  button.btn-limpar {
+    background: #555a6b;
+    margin-top: 10px;
+  }
+  button.btn-limpar:hover {
+    background: #3a3f4e;
+  }
+
+  /* CATÁLOGO */
+  .catalogo {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 25px;
+    justify-content: flex-start;
+  }
+  .card {
+    background-color: #324a7a;
+    border-radius: 15px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+    overflow: hidden;
+    transition: transform 0.2s;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+  .card:hover {
+    transform: scale(1.04);
+  }
+  .card img {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    max-height: 300px;
+    background-color: #324a7a;
+  }
+  .card-content {
+    padding: 15px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+  }
+  .card-content h3 {
+    margin: 0 0 10px 0;
+    color: #1e90ff;
+  }
+  .card-content p {
+    margin: 4px 0;
+    font-size: 14px;
+    color: #dbe3f0;
+    flex-grow: 0;
+  }
+  .btn-detalhes {
+    margin-top: 15px;
+    display: inline-block;
+    padding: 10px 16px;
+    background: #1e90ff;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+    text-align: center;
+    transition: background 0.3s;
+  }
+  .btn-detalhes:hover {
+    background: #156ecf;
+  }
+
+  .actions {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    gap: 10px;
+  }
+  .actions button {
+    background-color: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    padding: 8px;
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+    color: white;
+    transition: background-color 0.3s, transform 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .actions button:hover {
+    background-color: rgba(255, 255, 255, 0.4);
+    transform: scale(1.1);
+  }
+
+  .badge-pre-cadastrado {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: #f39c12;
+    color: #fff;
+    font-weight: 700;
+    padding: 4px 8px;
+    border-radius: 8px;
+    font-size: 12px;
+    user-select: none;
+  }
+.botao-flutuante {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  width: 60px;
+  height: 60px;
+  background-color: #1e90ff;
+  color: white;
+  border-radius: 50%;
+  font-size: 32px;
+  font-weight: bold;
+  text-align: center;
+  line-height: 60px;
+  text-decoration: none;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  z-index: 999;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+.botao-flutuante:hover {
+  background-color: #156ecf;
+  transform: scale(1.1);
+}
+
+.menu-nav ul.lista-menu-nav {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+/* Este item (li) que contém o botão vai para a extrema direita */
+.menu-nav ul.lista-menu-nav .btn-cadastrar-li {
+  margin-left: auto;  /* empurra para a direita */
+}
+
+/* Estilo do botão cadastrar */
+.menu-nav .btn-cadastrar-animal {
+  background: linear-gradient(135deg, #1e90ff 0%, #4facfe 100%);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 25px;
+  font-weight: 700;
+  font-size: 16px;
+  text-decoration: none;
+  box-shadow: 0 4px 12px rgba(30, 144, 255, 0.5);
+  transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+  display: inline-block;
+}
+
+.menu-nav .btn-cadastrar-animal:hover {
+  background: linear-gradient(135deg, #156ecf 0%, #3a99ff 100%);
+  box-shadow: 0 6px 20px rgba(30, 144, 255, 0.7);
+  transform: translateY(-2px);
+  color: white;
+}
+
+  @media (max-width: 600px) {
+    .container {
+      flex-direction: column;
+      padding: 15px;
+    }
+    .filtro-lateral {
+      width: 100%;
+      margin-bottom: 20px;
+    }
+    .catalogo {
+      grid-template-columns: 1fr;
+    }
+    .mensagem-erro {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: #1e90ff;
+  font-size: 24px;
+  font-weight: bold;
+  padding: 40px 20px;
+}
+
+
+  }
+</style>
+<html lang="pt-br">
+<head>
+   <meta charset="utf-8">
+   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+   <title>Adote um Amigo - AdoPetz</title>
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <link rel="shortcut icon" href="Images/Adopt 500x500.png" type="image/x-icon">
+   
+   <link rel="stylesheet" href="css/home.css">
+   <script defer>
+    document.addEventListener("DOMContentLoaded", () => {
+        const perfilUsuario = document.getElementById("perfil-usuario");
+        const miniNavbar = document.getElementById("mini-navbar");
+
+        perfilUsuario.addEventListener("click", (e) => {
+            e.stopPropagation();
+            miniNavbar.style.display = (miniNavbar.style.display === "block") ? "none" : "block";
+        });
+
+        document.addEventListener("click", (e) => {
+            if (!miniNavbar.contains(e.target) && e.target !== perfilUsuario && !perfilUsuario.contains(e.target)) {
+                miniNavbar.style.display = "none";
+            }
+        });
+
+        const linksMiniNavbar = miniNavbar.querySelectorAll("a");
+        linksMiniNavbar.forEach(link => {
+            link.addEventListener("click", () => {
+                miniNavbar.style.display = "none";
+            });
+        });
+
+        inserirAnunciosDinamicos();
+
+        const linkSobreNos = document.querySelector('a[href="sobre-nos.html"]');
+        if (linkSobreNos) {
+            linkSobreNos.addEventListener("click", (e) => {
+                e.preventDefault();
+                const sessaoSobre = document.querySelector(".sessao-sobre");
+                if (sessaoSobre) {
+                    sessaoSobre.scrollIntoView({ behavior: "smooth" });
+                }
+            });
+        }
+    });
+
+    function logout() {
+        alert("Logout realizado!");
+        window.location.href = "login.html";
+    }
+
+    function carregarAnuncios() {
+        return JSON.parse(localStorage.getItem("anuncios")) || [];
+    }
+
+    function criarCard(anuncio) {
+        const card = document.createElement("div");
+        card.classList.add("card-animal");
+
+        card.innerHTML = `
+            <img class="imagem-animal" src="${anuncio.imagem}" alt="${anuncio.nome}">
+            <h3>${anuncio.nome}</h3>
+            <p>Idade: ${anuncio.idade} anos</p>
+            <p>Porte: ${anuncio.porte || "Desconhecido"}</p>
+            <a href="detalhes.html" class="btn-detalhes">Ver detalhes</a>
+        `;
+
+        return card;
+    }
+
+    function inserirAnunciosDinamicos() {
+        const container = document.getElementById("animais-vitrine");
+        const anuncios = carregarAnuncios();
+
+        anuncios.slice(0, 4).forEach(anuncio => {
+            const novoCard = criarCard(anuncio);
+            container.appendChild(novoCard);
+        });
+    }
+   </script>
+</head>
+<body>
+    <header class="cabecalho">
+        <div class="container-cabecalho">
+            <div class="logo">
+                <img class="img-cabecalho" src="Images/Adopt 500x500.png" alt="Logo AdoPetz">
+                <h2 class="texto-logo">AdoPetz</h2>
+            </div>
+
+            <nav class="menu-nav">
+  <ul class="lista-menu-nav">
+    <li class="item-menu-nav"><a href="homelogada.html">Início</a></li>
+    <li class="item-menu-nav"><a href="catalogo.html">Adote</a></li>
+
+    <li class="item-menu-nav dropdown">
+      <a href="#" class="dropbtn">Recursos</a>
+      <ul class="dropdown-content">
+        <li><a href="calendario.html">Calendário</a></li>
+        <li><a href="blog.html">Blog</a></li>
+        <li><a href="denuncia.html">Denuncie</a></li>
+      </ul>
+    </li>
+
+    <li class="item-menu-nav dropdown">
+      <a href="#" class="dropbtn">Parceiro</a>
+      <ul class="dropdown-content">
+        <li><a href="itens.html">Loja</a></li>
+        <li><a href="mapa.html">Mapa</a></li>
+      </ul>
+    </li>
+
+    <li class="item-menu-nav dropdown">
+      <a href="#" class="dropbtn">Institucional</a>
+      <ul class="dropdown-content">
+        <li><a href="sobre-nos.html">Sobre Nós</a></li>
+        <li><a href="contribua.html">Contribua Conosco</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+            <div class="perfil-usuario" id="perfil-usuario">
+                <img class="foto-usuario" src="Images/meuamor.jpg" alt="Foto do Usuário">
+                <span class="nome-usuario">Karen</span>
+            </div>
+
+            <div class="mini-navbar" id="mini-navbar" style="display: none;">
+                <ul>
+                    <li><a href="perfil.html">Exibir Perfil</a></li>
+                    <li><a href="meus_anuncios.html">Meus Anuncios</a></li>
+                    <li><a href="chats.html">Meus Chats</a></li>
+                    <li><a href="home.html">Sair</a></li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+</head>
+<a href="upload.html" class="botao-flutuante" title="Cadastrar novo animal">+</a>
+
+<body>
+ 
+
+  <div class="container">
+    <aside class="filtro-lateral">
+      
+      <!-- Filtros -->
+      <h3>Filtrar Animais</h3>
+      <div class="filtro-group">
+        <label>Localidade</label>
+        <div class="checkbox-group">
+          <label><input type="checkbox" class="filtro-localidade" value="SP" /> São Paulo (SP)</label><br />
+          <label><input type="checkbox" class="filtro-localidade" value="RJ" /> Rio de Janeiro (RJ)</label><br />
+          <label><input type="checkbox" class="filtro-localidade" value="MG" /> Minas Gerais (MG)</label>
+        </div>
+      </div>
+      <div class="filtro-group">
+        <label>Vacinado</label>
+        <div class="checkbox-group">
+          <label><input type="checkbox" class="filtro-vacinado" value="Sim" /> Sim</label><br />
+          <label><input type="checkbox" class="filtro-vacinado" value="Não" /> Não</label>
+        </div>
+      </div>
+      <div class="filtro-group">
+        <label>Tipo de Animal</label>
+        <div class="checkbox-group">
+          <label><input type="checkbox" class="filtro-tipo" value="Cachorro" /> Cachorro</label><br />
+          <label><input type="checkbox" class="filtro-tipo" value="Gato" /> Gato</label><br />
+          <label><input type="checkbox" class="filtro-tipo" value="Outros" /> Outros</label>
+        </div>
+      </div>
+      <button class="btn-aplicar-filtro" id="btnFiltrar">Aplicar Filtro</button>
+      <button class="btn-aplicar-filtro btn-limpar" id="btnLimparFiltro">Limpar Filtro</button>
+    </aside>
+    <main class="catalogo" id="catalogo"></main>
+  </div>
+
+ 
+
+  <script>
+    const catalogo = document.getElementById('catalogo');
+    let listaAnimaisBanco = [];
+
+    async function carregarCatalogoDoBanco() {
+      try {
+        const res = await fetch('/api/animais');
+        listaAnimaisBanco = await res.json();
+        localStorage.setItem('anuncios', JSON.stringify(listaAnimaisBanco));
+        renderizarCatalogo(listaAnimaisBanco);
+      } catch (err) {
+        console.error('Erro ao carregar animais do banco:', err);
+      }
+    }
+
+    function obterTodosAnuncios() {
+      return listaAnimaisBanco;
+    }
+
+    function criarCard(animal) {
+      const card = document.createElement('div');
+      card.className = 'card';
+
+      card.innerHTML = `
+        <img src="${animal.imagem}" alt="Foto de ${animal.nome}">
+        <div class="card-content">
+          <h3>${animal.nome}</h3>
+          <p><strong>Tipo:</strong> ${animal.tipo}</p>
+          <p><strong>Raça:</strong> ${animal.raca}</p>
+          <p><strong>Idade:</strong> ${animal.idade}</p>
+          <p><strong>Vacinado:</strong> ${animal.vacinado}</p>
+          <a href="detalhes.html?id=${animal.id}" class="btn-detalhes">Ver detalhes</a>
+        </div>
+      `;
+
+      return card;
+    }
+
+    function renderizarCatalogo(lista) {
+      catalogo.innerHTML = '';
+      if (lista.length === 0) {
+        const { locaisSelecionados, vacinadosSelecionados, tiposSelecionados } = pegarFiltros();
+        let filtrosMsg = [];
+
+        if (locaisSelecionados.length > 0) {
+          filtrosMsg.push(`Localidade: ${locaisSelecionados.join(', ')}`);
+        }
+        if (vacinadosSelecionados.length > 0) {
+          filtrosMsg.push(`Vacinado: ${vacinadosSelecionados.map(v => v.charAt(0).toUpperCase() + v.slice(1)).join(', ')}`);
+        }
+        if (tiposSelecionados.length > 0) {
+          filtrosMsg.push(`Tipo de Animal: ${tiposSelecionados.join(', ')}`);
+        }
+
+        catalogo.innerHTML = `
+          <p style="color:#dbe3f0;">Nenhum animal encontrado com os filtros aplicados.</p>
+          ${filtrosMsg.length > 0 ? `<p style="color:#dbe3f0;">Filtros aplicados: ${filtrosMsg.join(' | ')}</p>` : ''}
+        `;
+        return;
+      }
+
+      lista.forEach((animal) => {
+        catalogo.appendChild(criarCard(animal));
+      });
+    }
+
+    function pegarFiltros() {
+      const locaisSelecionados = Array.from(document.querySelectorAll('.filtro-localidade:checked')).map(cb => cb.value);
+      const vacinadosSelecionados = Array.from(document.querySelectorAll('.filtro-vacinado:checked')).map(cb => cb.value.toLowerCase());
+      const tiposSelecionados = Array.from(document.querySelectorAll('.filtro-tipo:checked')).map(cb => cb.value);
+      return { locaisSelecionados, vacinadosSelecionados, tiposSelecionados };
+    }
+
+    function filtrarAnimais() {
+      const { locaisSelecionados, vacinadosSelecionados, tiposSelecionados } = pegarFiltros();
+      let todos = obterTodosAnuncios();
+      let filtrados = todos.filter(animal => {
+        if (locaisSelecionados.length > 0 && !locaisSelecionados.includes(animal.localidade)) return false;
+        if (vacinadosSelecionados.length > 0 && !vacinadosSelecionados.includes(String(animal.vacinado).toLowerCase())) return false;
+        if (tiposSelecionados.length > 0 && !tiposSelecionados.includes(animal.tipo)) return false;
+        return true;
+      });
+      renderizarCatalogo(filtrados);
+    }
+
+    function limparFiltros() {
+      document.querySelectorAll('.filtro-localidade').forEach(cb => cb.checked = false);
+      document.querySelectorAll('.filtro-vacinado').forEach(cb => cb.checked = false);
+      document.querySelectorAll('.filtro-tipo').forEach(cb => cb.checked = false);
+      renderizarCatalogo(obterTodosAnuncios());
+    }
+
+    document.getElementById('btnFiltrar').addEventListener('click', filtrarAnimais);
+    document.getElementById('btnLimparFiltro').addEventListener('click', limparFiltros);
+
+    // Inicia carregando do MySQL
+    carregarCatalogoDoBanco();
+  </script>
+</body>
+</html>

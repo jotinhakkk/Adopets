@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="shortcut icon" href="Images/Adopt 500x500.png" type="image/x-icon" />
+   <link rel="stylesheet" href="css/home.css">
+  <title>Meus Anúncios</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      font-size: 18px;
+      color: #ffffff;
+      
+      
+      
+      
+      
+      align-items: center;
+    }
+    .catalogo {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      padding: 20px;
+     
+      width: 100%;
+      left: 600px;
+    }
+    .card {
+      position: relative;
+      background-color: #324a7a;
+      color: #dbe3f0;
+      display: flex;
+      align-items: center;
+      padding: 15px 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+      cursor: pointer;
+      overflow: hidden;
+    }
+    .card img.animal-img {
+      width: 80px;
+      height: 80px;
+      border-radius: 5px;
+      margin-right: 15px;
+      object-fit: cover;
+    }
+    .actions {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .actions button {
+      background-color: rgba(255, 255, 255, 0.2);
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      padding: 8px;
+      width: 40px;
+      height: 40px;
+      font-size: 18px;
+      color: white;
+      transition: background-color 0.3s, transform 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .actions button:hover {
+      background-color: rgba(255, 255, 255, 0.4);
+      transform: scale(1.1);
+    }
+   
+  </style>
+</head>
+<body>
+ <header class="cabecalho">
+        <div class="container-cabecalho">
+            <div class="logo">
+                <img class="img-cabecalho" src="Images/Adopt 500x500.png" alt="Logo AdoPetz">
+                <h2 class="texto-logo">AdoPetz</h2>
+            </div>
+
+            <nav class="menu-nav">
+  <ul class="lista-menu-nav">
+    <li class="item-menu-nav"><a href="homelogada.html">Início</a></li>
+    <li class="item-menu-nav"><a href="catalogo.html">Adote</a></li>
+
+    <li class="item-menu-nav dropdown">
+      <a href="#" class="dropbtn">Recursos</a>
+      <ul class="dropdown-content">
+        <li><a href="calendario.html">Calendário</a></li>
+        <li><a href="blog.html">Blog</a></li>
+        <li><a href="denuncia.html">Denuncie</a></li>
+      </ul>
+    </li>
+
+    <li class="item-menu-nav dropdown">
+      <a href="#" class="dropbtn">Parceiro</a>
+      <ul class="dropdown-content">
+        <li><a href="itens.html">Loja</a></li>
+        <li><a href="mapa.html">Mapa</a></li>
+      </ul>
+    </li>
+
+    <li class="item-menu-nav dropdown">
+      <a href="#" class="dropbtn">Institucional</a>
+      <ul class="dropdown-content">
+        <li><a href="sobre-nos.html">Sobre Nós</a></li>
+        <li><a href="contribua.html">Contribua Conosco</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+            <div class="perfil-usuario" id="perfil-usuario">
+                <img class="foto-usuario" src="Images/meuamor.jpg" alt="Foto do Usuário">
+                <span class="nome-usuario">Karen</span>
+            </div>
+
+            <div class="mini-navbar" id="mini-navbar" style="display: none;">
+                <ul>
+                    <li><a href="perfil.html">Exibir Perfil</a></li>
+                    <li><a href="meus_anuncios.html">Meus Anuncios</a></li>
+                    <li><a href="chats.html">Meus Chats</a></li>
+                    <li><a href="home.html">Sair</a></li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+  <div class="catalogo" id="catalogo"></div>
+<div id="mensagem-vazia" style="display:none; text-align:center; margin-top: 50px;">
+  <p style="color:#ccc; font-size: 18px;">Você ainda não tem anúncios cadastrados.</p>
+  <a href="cadastro_animal.html" style="display: inline-block; margin-top: 10px; padding: 10px 20px; background-color: #1e90ff; color: white; border-radius: 6px; text-decoration: none; font-weight: bold;">
+    Cadastrar Anúncio
+  </a>
+</div>
+
+<script>
+    let meusAnunciosBanco = [];
+
+    // Busca os anúncios diretamente do banco MySQL
+    async function carregarAnunciosDoBanco() {
+      try {
+        const res = await fetch('/api/meus_anuncios');
+        if (!res.ok) throw new Error('Falha ao buscar anúncios');
+        meusAnunciosBanco = await res.json();
+        localStorage.setItem("anuncios", JSON.stringify(meusAnunciosBanco));
+        renderizarAnuncios();
+      } catch (err) {
+        console.error('Erro ao carregar anúncios do MySQL:', err);
+      }
+    }
+
+    // Renderiza os cartões de anúncio na tela
+    function renderizarAnuncios() {
+      const catalogo = document.getElementById("catalogo");
+      catalogo.innerHTML = "";
+      const mensagemVazia = document.getElementById("mensagem-vazia");
+
+      if (meusAnunciosBanco.length === 0) {
+        mensagemVazia.style.display = "block";
+        return;
+      } else {
+        mensagemVazia.style.display = "none";
+      }
+
+      meusAnunciosBanco.forEach(anuncio => {
+        const card = document.createElement("div");
+        card.classList.add("card");
+
+        card.innerHTML = `
+          <img src="${anuncio.imagem || anuncio.imagem_url}" alt="${anuncio.nome || anuncio.anuncio_nome}" class="animal-img" />
+          <div>
+            <h2>${anuncio.nome || anuncio.anuncio_nome}</h2>
+            <p>Raça: ${anuncio.raca}</p>
+            <p>Idade: ${anuncio.idade}</p>
+            <p>Coloração: ${anuncio.coloracao}</p>
+            <p>Vacinado: ${anuncio.vacinado}</p>
+            <p>Data Nascimento: ${anuncio.data_nascimento}</p>
+          </div>
+          <div class="actions">
+            <button title="Editar" class="btn-editar">✏️</button>
+            <button title="Excluir" class="btn-excluir">🗑️</button>
+          </div>
+        `;
+
+        // Eventos dos botões Editar e Excluir
+        const btnEditar = card.querySelector('.btn-editar');
+        btnEditar.addEventListener('click', (e) => {
+          e.stopPropagation();
+          editarAnuncio(anuncio.id);
+        });
+
+        const btnExcluir = card.querySelector('.btn-excluir');
+        btnExcluir.addEventListener('click', (e) => {
+          e.stopPropagation();
+          excluirAnuncio(anuncio.id);
+        });
+
+        catalogo.appendChild(card);
+      });
+    }
+
+    // Redireciona para a página de edição levando os dados e o ID do banco
+    function editarAnuncio(id) {
+      const anuncio = meusAnunciosBanco.find(a => String(a.id) === String(id));
+      if (!anuncio) {
+        alert("Anúncio não encontrado!");
+        return;
+      }
+      localStorage.setItem("animalSelecionado", JSON.stringify(anuncio));
+      window.location.href = `editar_animal.html?id=${anuncio.id}`;
+    }
+
+    // Exclui o anúncio no banco de dados MySQL e atualiza a tela
+    async function excluirAnuncio(id) {
+      if (confirm("Tem certeza que deseja excluir este anúncio?")) {
+        try {
+          const res = await fetch(`/api/meus_anuncios/${id}`, {
+            method: 'DELETE'
+          });
+          if (!res.ok) throw new Error('Erro ao excluir no banco');
+          await carregarAnunciosDoBanco();
+        } catch (err) {
+          console.error(err);
+          alert("Erro ao excluir o anúncio do banco de dados.");
+        }
+      }
+    }
+
+    // Inicializa a página e o menu do usuário
+    document.addEventListener("DOMContentLoaded", () => {
+      carregarAnunciosDoBanco();
+
+      const perfilUsuario = document.getElementById("perfil-usuario");
+      const miniNavbar = document.getElementById("mini-navbar");
+
+      perfilUsuario.addEventListener("click", (e) => {
+        e.stopPropagation();
+        miniNavbar.style.display = (miniNavbar.style.display === "block") ? "none" : "block";
+      });
+
+      document.addEventListener("click", (e) => {
+        if (!miniNavbar.contains(e.target) && e.target !== perfilUsuario && !perfilUsuario.contains(e.target)) {
+          miniNavbar.style.display = "none";
+        }
+      });
+
+      const linksMiniNavbar = miniNavbar.querySelectorAll("a");
+      linksMiniNavbar.forEach(link => {
+        link.addEventListener("click", () => {
+          miniNavbar.style.display = "none";
+        });
+      });
+    });
+  </script>
+</body>
+</html>

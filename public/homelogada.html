@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+   <meta charset="utf-8">
+   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+   <title>Adote um Amigo - AdoPetz</title>
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <link rel="shortcut icon" href="Images/Adopt 500x500.png" type="image/x-icon">
+   <link rel="stylesheet" href="css/home.css">
+   <link rel="stylesheet" href="css/sobre-nos.css">
+
+   <style>
+    /* Estilo Chatbot */
+    .chatbot-icon {
+      position: fixed;
+      bottom: 25px;
+      left: 25px;
+      background-color: #1e90ff;
+      color: white;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      text-align: center;
+      font-size: 28px;
+      line-height: 60px;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      z-index: 1000;
+    }
+
+    .chat-popup {
+      position: fixed;
+      bottom: 100px;
+      left: 25px;
+      width: 320px;
+      max-height: 420px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+      display: none;
+      flex-direction: column;
+      z-index: 1000;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      overflow: hidden;
+    }
+
+    .chat-header {
+      background-color: #1e90ff;
+      color: white;
+      padding: 12px 20px;
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    .chat-messages {
+      flex: 1;
+      padding: 15px;
+      overflow-y: auto;
+      background: #f5f8ff;
+    }
+
+    .message {
+      max-width: 80%;
+      margin-bottom: 12px;
+      padding: 10px 14px;
+      border-radius: 16px;
+      font-size: 14px;
+      line-height: 1.3;
+      clear: both;
+    }
+
+    .message.user {
+      background-color: #1e90ff;
+      color: white;
+      margin-left: auto;
+      border-bottom-right-radius: 2px;
+    }
+
+    .message.bot {
+      background-color: #e1e7ff;
+      color: #333;
+      margin-right: auto;
+      border-bottom-left-radius: 2px;
+    }
+
+    .chat-input-area {
+      display: flex;
+      border-top: 1px solid #ddd;
+      padding: 10px 15px;
+      background: white;
+    }
+
+    .chat-input-area input {
+      flex: 1;
+      padding: 8px 12px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 18px;
+      outline: none;
+      transition: border-color 0.3s ease;
+    }
+
+    .chat-input-area input:focus {
+      border-color: #1e90ff;
+    }
+
+    .chat-input-area button {
+      margin-left: 10px;
+      background-color: #1e90ff;
+      border: none;
+      color: white;
+      padding: 0 15px;
+      border-radius: 18px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background-color 0.3s ease;
+    }
+
+    .chat-input-area button:hover {
+      background-color: #156ecf;
+    }
+
+    .quick-questions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 10px 15px;
+      background: #f0f4ff;
+    }
+
+    .quick-questions button {
+      flex: 1 1 45%;
+      background: #d6e0ff;
+      border: none;
+      border-radius: 14px;
+      padding: 6px 10px;
+      font-size: 13px;
+      cursor: pointer;
+      color: #1e90ff;
+      font-weight: 600;
+      transition: background-color 0.3s ease;
+    }
+
+    .quick-questions button:hover {
+      background: #a9c1ff;
+    }
+   </style>
+
+   <script defer>
+    document.addEventListener("DOMContentLoaded", () => {
+        const perfilUsuario = document.getElementById("perfil-usuario");
+        const miniNavbar = document.getElementById("mini-navbar");
+
+        perfilUsuario.addEventListener("click", (e) => {
+            e.stopPropagation();
+            miniNavbar.style.display = (miniNavbar.style.display === "block") ? "none" : "block";
+        });
+
+        document.addEventListener("click", (e) => {
+            if (!miniNavbar.contains(e.target) && e.target !== perfilUsuario && !perfilUsuario.contains(e.target)) {
+                miniNavbar.style.display = "none";
+            }
+        });
+
+        const linksMiniNavbar = miniNavbar.querySelectorAll("a");
+        linksMiniNavbar.forEach(link => {
+            link.addEventListener("click", () => {
+                miniNavbar.style.display = "none";
+            });
+        });
+
+        inserirAnunciosDinamicos();
+
+        // Scroll para a seção "Sobre Nós"
+        const linkSobreNos = document.querySelector('a[href="sobre-nos.html"]');
+        if (linkSobreNos) {
+            linkSobreNos.addEventListener("click", (e) => {
+                e.preventDefault();
+                const sessaoSobre = document.querySelector(".sessao-sobre");
+                if (sessaoSobre) {
+                    sessaoSobre.scrollIntoView({ behavior: "smooth" });
+                }
+            });
+        }
+
+        // Chatbot
+        const botaoChat = document.getElementById("chatbot-icon");
+        const popup = document.getElementById("chat-popup");
+        const mensagens = document.getElementById("chat-messages");
+        const input = document.getElementById("chat-input");
+        const form = document.getElementById("chat-form");
+
+        const respostas = {
+          "como faço para adotar?": "Para adotar, vá até a aba Catálogo, escolha um animal e clique em 'Adotar'.",
+          "como posso doar?": "Você pode doar acessando a aba 'Seja um Parceiro' e preenchendo o formulário.",
+          "onde estão localizados?": "Estamos localizados no CCHS - UNIRIO. Veja o mapa no final da página.",
+          "qual o horário de atendimento?": "Nosso horário de atendimento é das 9h às 18h, de segunda a sexta."
+        };
+
+        function adicionarMensagem(texto, remetente) {
+          const msg = document.createElement("div");
+          msg.classList.add("message", remetente);
+          msg.textContent = texto;
+          mensagens.appendChild(msg);
+          mensagens.scrollTop = mensagens.scrollHeight;
+        }
+
+        function processarPergunta(pergunta) {
+          pergunta = pergunta.trim().toLowerCase();
+          // Busca resposta exata
+          if (respostas[pergunta]) {
+            return respostas[pergunta];
+          }
+          return "Desculpe, não entendi sua pergunta. Por favor, tente reformular.";
+        }
+
+        botaoChat.addEventListener("click", () => {
+          if (popup.style.display === "flex") {
+            popup.style.display = "none";
+          } else {
+            popup.style.display = "flex";
+            input.focus();
+          }
+        });
+
+        document.querySelectorAll(".pergunta-chat").forEach(btn => {
+          btn.addEventListener("click", () => {
+            const perguntaTexto = btn.textContent;
+            const perguntaKey = perguntaTexto.toLowerCase();
+            adicionarMensagem(perguntaTexto, "user");
+            adicionarMensagem(respostas[perguntaKey], "bot");
+          });
+        });
+
+        form.addEventListener("submit", (e) => {
+          e.preventDefault();
+          const pergunta = input.value.trim();
+          if (!pergunta) return;
+          adicionarMensagem(pergunta, "user");
+          const resposta = processarPergunta(pergunta);
+          adicionarMensagem(resposta, "bot");
+          input.value = "";
+        });
+    });
+
+    function logout() {
+        alert("Logout realizado!");
+        window.location.href = "login.html";
+    }
+
+    function carregarAnuncios() {
+        return JSON.parse(localStorage.getItem("anuncios")) || [];
+    }
+
+    function criarCard(anuncio) {
+        const card = document.createElement("div");
+        card.classList.add("card-animal");
+
+        card.innerHTML = `
+            <img class="imagem-animal" src="${anuncio.imagem}" alt="${anuncio.nome}">
+            <h3>${anuncio.nome}</h3>
+            <p>Idade: ${anuncio.idade} anos</p>
+        `;
+
+        card.addEventListener("click", () => {
+            window.location.href = "catalogo.html";
+        });
+
+        return card;
+    }
+
+    function inserirAnunciosDinamicos() {
+        const container = document.getElementById("animais-vitrine");
+        const anuncios = carregarAnuncios();
+
+        anuncios.slice(0, 4).forEach(anuncio => {
+            const novoCard = criarCard(anuncio);
+            container.appendChild(novoCard);
+        });
+    }
+   </script>
+</head>
+<body>
+    <header class="cabecalho">
+        <div class="container-cabecalho">
+            <div class="logo">
+                <img class="img-cabecalho" src="Images/Adopt 500x500.png" alt="Logo AdoPetz">
+                <h2 class="texto-logo">AdoPetz</h2>
+            </div>
+
+            <nav class="menu-nav">
+  <ul class="lista-menu-nav">
+    <li class="item-menu-nav"><a href="homelogada.html">Início</a></li>
+    <li class="item-menu-nav"><a href="catalogo.html">Adote</a></li>
+
+    <li class="item-menu-nav dropdown">
+      <a href="#" class="dropbtn">Recursos</a>
+      <ul class="dropdown-content">
+        <li><a href="calendario.html">Calendário</a></li>
+        <li><a href="blog.html">Blog</a></li>
+        <li><a href="denuncia.html">Denuncie</a></li>
+      </ul>
+    </li>
+
+    <li class="item-menu-nav dropdown">
+      <a href="#" class="dropbtn">Parceiro</a>
+      <ul class="dropdown-content">
+        <li><a href="itens.html">Loja</a></li>
+        <li><a href="mapa.html">Mapa</a></li>
+      </ul>
+    </li>
+
+    <li class="item-menu-nav dropdown">
+      <a href="#" class="dropbtn">Institucional</a>
+      <ul class="dropdown-content">
+        <li><a href="sobre-nos.html">Sobre Nós</a></li>
+        <li><a href="contribua.html">Contribua Conosco</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+            <div class="perfil-usuario" id="perfil-usuario">
+                <img class="foto-usuario" src="Images/meuamor.jpg" alt="Foto do Usuário">
+                <span class="nome-usuario">Karen</span>
+            </div>
+
+            <div class="mini-navbar" id="mini-navbar" style="display: none;">
+                <ul>
+                    <li><a href="perfil.html">Exibir Perfil</a></li>
+                    <li><a href="meus_anuncios.html">Meus Anuncios</a></li>
+                    <li><a href="chats.html">Meus Chats</a></li>
+                    <li><a href="config.html">Configurações</a></li>
+                    <li><a href="home.html">Sair</a></li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+    <main class="conteudo-principal">
+        <section class="info">
+            <div class="container-info">
+                <div class="conteudo-texto-info">
+                    <h1 class="titulo-P-info">Conheça seu novo amigo!</h1>
+                    <p class="texto-info">Encontre o companheiro ideal para sua família. Temos diversos animais esperando por um lar amoroso.</p>
+                    <a href="catalogo.html" class="btn-adote">Adote Agora</a>
+                </div>
+                <img class="ilustracao-info" src="Images/undraw_cat_epte (1).svg" alt="Ilustração de adoção">
+            </div>
+        </section>
+
+        <section class="animais">
+            <h2 class="titulo-P-animais">Conheça Alguns dos Nossos Animais</h2>
+            <div class="container-animais" id="animais-vitrine"></div>
+        </section>
+
+        <section class="sessao-sobre">
+            <h1 class="titulo-P-sobre">Nossa História</h1>
+            <p class="texto-sobre">Quisque lacinia vel ante ut sagittis. Integer ut pellentesque
+               lacus, nec eleifend ipsum. Nam dapibus aliquet dui, nec rutrum sem. Curabitur in
+               nibh auctor, ultricies mi et, commodo quam. Etiam vel elementum orci, vel consectetur
+               dui. Vivamus pulvinar cursus libero. Vestibulum eget tempor mi. Suspendisse
+               bibendum nunc enim, sagittis lobortis augue finibus ut. Integer aliquet nibh eu
+               elementum porttitor. Donec eros nisi, dapibus ut sollicitudin eu, egestas in neque.
+            </p>
+        </section>
+
+        <section class="redes-sociais">
+            <h2 class="titulo-P-redes-sociais">Nossas Redes Sociais</h2>
+            <div class="container-redes-sociais">
+                <a href="https://instagram.com" target="_blank" rel="noopener" aria-label="Instagram">
+                    <div class="card-redes-sociais">
+                        <img class="img-redes-sociais" src="Images/instagram.svg" alt="Ícone do Instagram">
+                        <p class="texto-card">Instagram</p>
+                    </div>
+                </a>
+                <a href="https://google.com" target="_blank" rel="noopener" aria-label="Telefone">
+                    <div class="card-redes-sociais">
+                        <img class="img-redes-sociais" src="Images/phone.svg" alt="Ícone de Telefone">
+                        <p class="texto-card">Telefone</p>
+                    </div>
+                </a>
+                <a href="https://google.com" target="_blank" rel="noopener" aria-label="Email">
+                    <div class="card-redes-sociais">
+                        <img class="img-redes-sociais" src="Images/email.svg" alt="Ícone de Email">
+                        <p class="texto-card">Email</p>
+                    </div>
+                </a>
+            </div>
+            <p class="texto-redes-sociais">Etiam in nisi erat. Mauris iaculis sagittis nibh ac pretium. 
+               Duis id bibendum tellus. Mauris sed mollis nisi, eu consectetur nisl. Nullam et orci 
+               accumsan, lobortis turpis id, laoreet eros. Vestibulum libero purus, efficitur non venenatis
+               sit amet, mattis ac turpis. Sed eu libero eu neque lobortis placerat.
+            </p>
+        </section>
+
+        <section class="localizacao">
+            <h2 class="titulo-P-localizacao">Venha nos Conhecer</h2>
+            <div class="teste">
+                <iframe class="mapa" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3673.3553274237397!2d-43.173915!3d-22.9545328!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x99801c7b00d127%3A0x61b150085d360085!2sUNIRIO%20-%20CCHS!5e0!3m2!1spt-BR!2sbr!4v1723097159939!5m2!1spt-BR!2sbr" width="100%" height="450" style="border:0;" allowfullscreen="" loading="eager" title="Nossa Localização"></iframe>
+            </div>
+        </section>
+    </main>
+
+    <footer class="rodape">
+        <h4 class="texto-rodape">AdoPetz &copy; Todos os direitos reservados</h4>
+    </footer>
+
+    <!-- Chatbot -->
+    <div id="chatbot-icon" class="chatbot-icon" title="Abrir chat">💬</div>
+
+    <div id="chat-popup" class="chat-popup" role="dialog" aria-modal="true" aria-labelledby="chat-header">
+      <div class="chat-header" id="chat-header">Chat AdoPetz</div>
+      <div class="chat-messages" id="chat-messages" aria-live="polite" aria-atomic="false"></div>
+
+      <div class="quick-questions" aria-label="Perguntas rápidas">
+        <button class="pergunta-chat" data-pergunta="como faço para adotar?">Como faço para adotar?</button>
+        <button class="pergunta-chat" data-pergunta="como posso doar?">Como posso doar?</button>
+        <button class="pergunta-chat" data-pergunta="onde estão localizados?">Onde estão localizados?</button>
+        <button class="pergunta-chat" data-pergunta="qual o horário de atendimento?">Qual o horário de atendimento?</button>
+      </div>
+
+      <form id="chat-form" class="chat-input-area" aria-label="Enviar mensagem">
+        <input type="text" id="chat-input" placeholder="Digite sua pergunta..." autocomplete="off" aria-describedby="chat-header" />
+        <button type="submit" aria-label="Enviar mensagem">Enviar</button>
+      </form>
+    </div>
+</body>
+</html>

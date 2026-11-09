@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Carrinho - AdoPetz</title>
+  <link rel="stylesheet" href="css/home.css" />
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #e8f0fc;
+      margin: 0;
+      padding: 0;
+      color: #1e3a5f;
+    }
+    .cabecalho {
+    background-color: #324a7a; /* Cor alinhada ao tema */
+    padding: 20px 0;
+}
+
+.container-cabecalho {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 90%;
+    margin: 0 auto;
+}
+
+
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+}
+
+.img-cabecalho {
+    width: 70px;
+    height: 70px;
+}
+
+.texto-logo {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #dbe3f0;
+}
+
+/* Navbar */
+.menu-nav .lista-menu-nav {
+    list-style: none;
+    display: flex;
+    gap: 1rem;
+}
+
+.lista-menu-nav .item-menu-nav a {
+    color: #dbe3f0;
+    text-decoration: none;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    transition: color 0.3s ease;
+}
+
+.lista-menu-nav .item-menu-nav a:hover {
+    color: #1e90ff;
+}
+
+/* Seção Info */
+.info {
+    background-color: #f0f0; /* Alinhado ao tema */
+    padding: 60px 0;
+}
+
+.container-info {
+    width: 90%;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    border-radius: 50px;
+}
+
+.conteudo-texto-info {
+    max-width: 500px;
+    color: #dbe3f0; /* Texto branco */
+}
+
+.titulo-P-info {
+    font-size: 36px;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+.texto-info {
+    font-size: 16px;
+    line-height: 1.6;
+    margin-bottom: 20px;
+    
+}
+    .container {
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 30px;
+      background: #ffffff ;
+      border-radius: 16px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+      
+    }
+    h2 {
+      margin-bottom: 25px;
+      text-align: center;
+      color: #1e90ff;
+    }
+    .item {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 20px 0;
+      border-bottom: 1px solid #d0d8e0;
+      position: relative;
+      border-radius: 40px;
+    }
+    .item img {
+      width: 90px;
+      height: 90px;
+      object-fit: contain;
+      border-radius: 16px;
+      background: #f2f6fa;
+    }
+    .info {
+      flex: 1;
+    }
+    .info h4 {
+      margin: 0;
+      font-size: 18px;
+      color: #1e3a5f;
+    }
+    .info p {
+      margin: 4px 0;
+      font-size: 14px;
+      color: #425b76;
+    }
+    .quantidade {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .quantidade button {
+      padding: 4px 10px;
+      background: #1e90ff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .remover {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #ff4d4d;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 28px;
+      height: 28px;
+      font-size: 16px;
+      cursor: pointer;
+      text-align: center;
+      line-height: 28px;
+    }
+    .remover:hover {
+      background: #cc0000;
+    }
+    .total {
+      text-align: right;
+      font-size: 20px;
+      font-weight: bold;
+      margin-top: 30px;
+      color: #1e3a5f;
+    }
+    .btn-finalizar {
+      display: block;
+      margin: 30px auto 0;
+      padding: 14px 30px;
+      background: #1e90ff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 17px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .btn-finalizar:hover {
+      background: #156ecf;
+    }
+  </style>
+</head>
+<body>
+ <header class="cabecalho">
+        <div class="container-cabecalho">
+            <div class="logo">
+                <img class="img-cabecalho" src="Images/Adopt 500x500.png" alt="Logo AdoPetz">
+                <h2 class="texto-logo">AdoPetz</h2>
+            </div>
+
+            <nav class="menu-nav">
+  <ul class="lista-menu-nav">
+    <li class="item-menu-nav"><a href="homelogada.html">Início</a></li>
+    <li class="item-menu-nav"><a href="catalogo.html">Adote</a></li>
+
+    <li class="item-menu-nav dropdown">
+      <a href="#" class="dropbtn">Recursos</a>
+      <ul class="dropdown-content">
+        <li><a href="calendario.html">Calendário</a></li>
+        <li><a href="blog.html">Blog</a></li>
+        <li><a href="denuncia.html">Denuncie</a></li>
+      </ul>
+    </li>
+
+    <li class="item-menu-nav dropdown">
+      <a href="#" class="dropbtn">Parceiro</a>
+      <ul class="dropdown-content">
+        <li><a href="itens.html">Loja</a></li>
+        <li><a href="mapa.html">Mapa</a></li>
+      </ul>
+    </li>
+
+    <li class="item-menu-nav dropdown">
+      <a href="#" class="dropbtn">Institucional</a>
+      <ul class="dropdown-content">
+        <li><a href="sobre-nos.html">Sobre Nós</a></li>
+        <li><a href="contribua.html">Contribua Conosco</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+            <div class="perfil-usuario" id="perfil-usuario">
+                <img class="foto-usuario" src="Images/meuamor.jpg" alt="Foto do Usuário">
+                <span class="nome-usuario">Karen</span>
+            </div>
+
+            <div class="mini-navbar" id="mini-navbar" style="display: none;">
+                <ul>
+                    <li><a href="perfil.html">Exibir Perfil</a></li>
+                    <li><a href="meus_anuncios.html">Meus Anuncios</a></li>
+                    <li><a href="chats.html">Meus Chats</a></li>
+                    <li><a href="home.html">Sair</a></li>
+                </ul>
+            </div>
+        </div>
+    </header>
+  <div class="container">
+    <h2>Seu Carrinho</h2>
+    <div id="lista-carrinho"></div>
+    <div class="total" id="total-compra"></div>
+    
+    <button class="btn-finalizar" onclick="finalizarCompra()">Ir para o Pagamento</button>
+    
+  </div>
+
+  <script>
+    let carrinho = JSON.parse(localStorage.getItem('carrinho')) || [];
+
+    function renderizarCarrinho() {
+      const lista = document.getElementById('lista-carrinho');
+      lista.innerHTML = '';
+      let total = 0;
+
+      carrinho.forEach((item, index) => {
+        total += item.preco * item.qtd;
+
+        const div = document.createElement('div');
+        div.className = 'item';
+        div.innerHTML = `
+          <button class="remover" onclick="removerItem(${index})">×</button>
+          <img src="${item.imagem}" alt="${item.nome}">
+          <div class="info">
+            <h4>${item.nome}</h4>
+            <p>${item.descricao || 'Sem descrição disponível.'}</p>
+            <p>Preço: R$ ${item.preco.toFixed(2)}</p>
+            <div class="quantidade">
+              <button onclick="alterarQuantidade(${index}, -1)">-</button>
+              <span>${item.qtd}</span>
+              <button onclick="alterarQuantidade(${index}, 1)">+</button>
+            </div>
+          </div>
+        `;
+        lista.appendChild(div);
+      });
+
+      document.getElementById('total-compra').textContent = `Total: R$ ${total.toFixed(2)}`;
+    }
+
+    function alterarQuantidade(index, delta) {
+      carrinho[index].qtd += delta;
+      if (carrinho[index].qtd <= 0) carrinho.splice(index, 1);
+      localStorage.setItem('carrinho', JSON.stringify(carrinho));
+      renderizarCarrinho();
+    }
+
+    function removerItem(index) {
+      carrinho.splice(index, 1);
+      localStorage.setItem('carrinho', JSON.stringify(carrinho));
+      renderizarCarrinho();
+    }
+
+    function finalizarCompra() {
+      if (carrinho.length === 0) {
+        alert("Seu carrinho está vazio!");
+        return;
+      }
+      window.location.href = 'pagamento.html';
+    }
+
+    renderizarCarrinho();
+        document.addEventListener("DOMContentLoaded", () => {
+        const perfilUsuario = document.getElementById("perfil-usuario");
+        const miniNavbar = document.getElementById("mini-navbar");
+
+        perfilUsuario.addEventListener("click", (e) => {
+            e.stopPropagation();
+
+            // Verifica se é "Entrar" → redireciona
+            const nomeUsuario = perfilUsuario.querySelector(".nome-usuario");
+            if (nomeUsuario && nomeUsuario.textContent.trim() === "Entrar") {
+                window.location.href = "login.html";
+            } else {
+                miniNavbar.style.display = (miniNavbar.style.display === "block") ? "none" : "block";
+            }
+        });
+
+        document.addEventListener("click", (e) => {
+            if (!miniNavbar.contains(e.target) && e.target !== perfilUsuario && !perfilUsuario.contains(e.target)) {
+                miniNavbar.style.display = "none";
+            }
+        });
+
+        const linksMiniNavbar = miniNavbar.querySelectorAll("a");
+        linksMiniNavbar.forEach(link => {
+            link.addEventListener("click", () => {
+                miniNavbar.style.display = "none";
+            });
+        });
+
+        inserirAnunciosDinamicos();
+
+        const linkSobreNos = document.querySelector('a[href="sobre-nos.html"]');
+        if (linkSobreNos) {
+            linkSobreNos.addEventListener("click", (e) => {
+                e.preventDefault();
+                const sessaoSobre = document.querySelector(".sessao-sobre");
+                if (sessaoSobre) {
+                    sessaoSobre.scrollIntoView({ behavior: "smooth" });
+                }
+            });
+        }
+    });
+
+    function logout() {
+        alert("Logout realizado!");
+        window.location.href = "login.html";
+    }
+
+    function carregarAnuncios() {
+        return JSON.parse(localStorage.getItem("anuncios")) || [];
+    }
+
+    function criarCard(anuncio) {
+        const card = document.createElement("div");
+        card.classList.add("card-animal");
+
+        card.innerHTML = `
+            <img class="imagem-animal" src="${anuncio.imagem}" alt="${anuncio.nome}">
+            <h3>${anuncio.nome}</h3>
+            <p>Idade: ${anuncio.idade} anos</p>
+            <p>Porte: ${anuncio.porte || "Desconhecido"}</p>
+            <a href="detalhes.html" class="btn-detalhes">Ver detalhes</a>
+        `;
+
+        return card;
+    }
+
+    function inserirAnunciosDinamicos() {
+        const container = document.getElementById("animais-vitrine");
+        const anuncios = carregarAnuncios();
+
+        anuncios.slice(0, 4).forEach(anuncio => {
+            const novoCard = criarCard(anuncio);
+            container.appendChild(novoCard);
+        });
+    }
+  </script>
+</body>
+</html>

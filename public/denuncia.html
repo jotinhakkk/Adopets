@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <link rel="stylesheet" href="css/home.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Faça sua Denúncia</title>
+   
+  <style>
+ 
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f0f4f8;
+      color: #333;
+      
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+      background-color: #fff;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+      position: relative;
+        top: 50px;
+    }
+
+    h2 {
+      font-size: 2rem;
+      margin-bottom: 20px;
+      color: #1a1a1a;
+    }
+
+    p {
+      font-size: 1.1rem;
+      margin-bottom: 25px;
+    }
+
+    label {
+      font-weight: 600;
+      font-size: 1rem;
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    select {
+      width: 100%;
+      padding: 15px;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      margin-bottom: 30px;
+      background-color: #fdfdfd;
+      transition: border 0.3s;
+    }
+
+    select:focus {
+      border-color: #0077cc;
+      outline: none;
+    }
+
+    .card {
+      display: none;
+      padding: 25px;
+      border-radius: 12px;
+      color: white;
+      font-size: 1.2rem;
+      line-height: 1.5;
+      margin-bottom: 20px;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .card:hover {
+      transform: scale(1.02);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .azul-claro {
+      background-color: #4da6ff;
+    }
+
+    .vermelho {
+      background-color: #e74c3c;
+    }
+
+    .verde {
+      background-color: #2ecc71;
+    }
+
+    .azul-marinho {
+      background-color: #003366;
+    }
+
+    .telefone {
+      font-weight: bold;
+      font-size: 1.4rem;
+      display: block;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+<header class="cabecalho">
+        <div class="container-cabecalho">
+            <div class="logo">
+                <img class="img-cabecalho" src="Images/Adopt 500x500.png" alt="Logo AdoPetz">
+                <h2 class="texto-logo">AdoPetz</h2>
+            </div>
+
+            <nav class="menu-nav">
+  <ul class="lista-menu-nav">
+    <li class="item-menu-nav"><a href="homelogada.html">Início</a></li>
+    <li class="item-menu-nav"><a href="catalogo.html">Adote</a></li>
+
+    <li class="item-menu-nav dropdown">
+      <a href="#" class="dropbtn">Recursos</a>
+      <ul class="dropdown-content">
+        <li><a href="calendario.html">Calendário</a></li>
+        <li><a href="blog.html">Blog</a></li>
+        <li><a href="denuncia.html">Denuncie</a></li>
+      </ul>
+    </li>
+
+    <li class="item-menu-nav dropdown">
+      <a href="#" class="dropbtn">Parceiro</a>
+      <ul class="dropdown-content">
+        <li><a href="itens.html">Loja</a></li>
+        <li><a href="mapa.html">Mapa</a></li>
+      </ul>
+    </li>
+
+    <li class="item-menu-nav dropdown">
+      <a href="#" class="dropbtn">Institucional</a>
+      <ul class="dropdown-content">
+        <li><a href="sobre-nos.html">Sobre Nós</a></li>
+        <li><a href="contribua.html">Contribua Conosco</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+            <div class="perfil-usuario" id="perfil-usuario">
+                <img class="foto-usuario" src="Images/meuamor.jpg" alt="Foto do Usuário">
+                <span class="nome-usuario">Karen</span>
+            </div>
+
+            <div class="mini-navbar" id="mini-navbar" style="display: none;">
+                <ul>
+                    <li><a href="perfil.html">Exibir Perfil</a></li>
+                    <li><a href="meus_anuncios.html">Meus Anuncios</a></li>
+                    <li><a href="chats.html">Meus Chats</a></li>
+                    <li><a href="home.html">Sair</a></li>
+                </ul>
+            </div>
+        </div>
+    </header>
+  <div class="container">
+    <h2>📢 Faça sua denúncia</h2>
+    <p>Selecione o motivo da denúncia para visualizar o órgão responsável, telefone de contato e acessar a página oficial diretamente.</p>
+
+    <label for="motivo">Motivo da Denúncia:</label>
+    <select id="motivo" onchange="mostrarCard()">
+      <option value="">-- Selecione --</option>
+      <option value="emergencia">Situação de emergência e risco imediato</option>
+      <option value="disque">Disque-denúncia (anônima)</option>
+      <option value="silvestre">Animal silvestre em área urbana</option>
+      <option value="maus-tratos">Maus tratos a animais (RJ)</option>
+    </select>
+
+    <div id="emergencia" class="card azul-claro" onclick="irPara('https://www.pmerj.rj.gov.br/')">
+      Polícia Militar (BPA - Batalhão de Polícia Ambiental)
+      <span class="telefone">📞 190</span>
+    </div>
+
+    <div id="disque" class="card vermelho" onclick="irPara('https://www.disquedenuncia.org.br/')">
+      Disque-Denúncia (anônima)
+      <span class="telefone">📞 181</span>
+    </div>
+
+    <div id="silvestre" class="card verde" onclick="irPara('https://www.ibama.gov.br/')">
+      IBAMA - Animal silvestre em área urbana
+      <span class="telefone">📞 0800 61 8080</span>
+    </div>
+
+    <div id="maus-tratos" class="card azul-marinho" onclick="irPara('https://www.1746.rio/')">
+      Prefeitura do Rio de Janeiro - Maus tratos a animais
+      <span class="telefone">📞 1746</span>
+    </div>
+  </div>
+
+  <script>
+    function mostrarCard() {
+      const opcoes = ["emergencia", "disque", "silvestre", "maus-tratos"];
+      opcoes.forEach(id => document.getElementById(id).style.display = "none");
+
+      const selecionado = document.getElementById("motivo").value;
+      if (selecionado) {
+        document.getElementById(selecionado).style.display = "block";
+      }
+    }
+
+    function irPara(url) {
+      window.open(url, "_blank");
+    }
+  </script>
+
+</body>
+</html>

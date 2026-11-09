@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="Images/Adopt 500x500.png" type="image/x-icon">
+    <title>Editar Anúncio</title>
+    <link rel="stylesheet" href="css/editar_animal.css">
+    
+    <a href="meus_anuncios.html" class="logout-button">
+        <img src="images/sair.png" alt="Voltar" class="logout-icon" />
+    </a>
+</head>
+<body>
+    <div class="header">
+        <a href="meus_anuncios.html">
+            <img src="Images/Adopt 500x500.png" alt="Logo Adopetz" class="logo">
+        </a>
+    </div>
+    <div class="edit-container">
+        <h1>Editar Anúncio</h1>
+        <form id="edit-form" enctype="multipart/form-data">
+            <label for="anuncio_nome">Nome do Anúncio:</label>
+            <input type="text" id="anuncio_nome" name="anuncio_nome" required>
+
+            <label for="descricao">Descrição:</label>
+            <textarea id="descricao" name="descricao" rows="4" required></textarea>
+
+            <label for="raca">Raça:</label>
+            <input type="text" id="raca" name="raca" required>
+
+            <label for="data_nascimento">Data de Nascimento:</label>
+            <input type="date" id="data_nascimento" name="data_nascimento" required>
+
+            <label for="coloracao">Coloração:</label>
+            <input type="text" id="coloracao" name="coloracao" required>
+
+            <label for="vacinado">Vacinado:</label>
+            <select id="vacinado" name="vacinado" required>
+                <option value="Sim">Sim</option>
+                <option value="Não">Não</option>
+            </select>
+
+            <label for="idade">Idade (anos):</label>
+            <input type="number" id="idade" name="idade" min="0" required>
+
+            <label for="imagem">Imagem:</label>
+            <input type="file" id="imagem" name="imagem" accept="image/*">
+            <div class="image-preview">
+                <img id="current-image" src="" alt="Imagem Atual">
+                <img id="new-image-preview" src="" alt="Nova Imagem" style="display: none;">
+            </div>
+            <button type="button" id="undo-button" style="display: none;">Desfazer Alteração</button>
+
+            <button type="submit">Salvar Alterações</button>
+        </form>
+    </div>
+    <script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const anuncio = JSON.parse(localStorage.getItem("animalSelecionado"));
+    if (!anuncio) {
+      alert("Nenhum anúncio selecionado para edição.");
+      window.location.href = "meus_anuncios.html";
+      return;
+    }
+
+    // Preencher o formulário
+    document.getElementById("anuncio_nome").value = anuncio.nome || anuncio.anuncio_nome;
+    document.getElementById("descricao").value = anuncio.descricao || "";
+    document.getElementById("raca").value = anuncio.raca || "";
+    document.getElementById("data_nascimento").value = anuncio.data_nascimento || "";
+    document.getElementById("coloracao").value = anuncio.coloracao || "";
+    document.getElementById("vacinado").value = anuncio.vacinado || "Não";
+    document.getElementById("idade").value = anuncio.idade || 0;
+
+    const currentImage = document.getElementById("current-image");
+    if (currentImage && anuncio.imagem) {
+      currentImage.src = anuncio.imagem;
+    }
+
+    const form = document.getElementById("edit-form");
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      // Atualizar o anúncio com os valores do formulário
+      anuncio.nome = document.getElementById("anuncio_nome").value;
+      anuncio.descricao = document.getElementById("descricao").value;
+      anuncio.raca = document.getElementById("raca").value;
+      anuncio.data_nascimento = document.getElementById("data_nascimento").value;
+      anuncio.coloracao = document.getElementById("coloracao").value;
+      anuncio.vacinado = document.getElementById("vacinado").value;
+      anuncio.idade = parseInt(document.getElementById("idade").value, 10);
+
+      // Aqui você pode implementar a atualização da imagem (opcional)
+
+      // Atualiza localStorage dos anúncios completos
+      let anuncios = JSON.parse(localStorage.getItem("anuncios")) || [];
+      const index = anuncios.findIndex(a => a.id === anuncio.id);
+      if (index !== -1) {
+        anuncios[index] = anuncio;
+        localStorage.setItem("anuncios", JSON.stringify(anuncios));
+      }
+
+      alert("Anúncio atualizado com sucesso!");
+      window.location.href = "meus_anuncios.html";
+    });
+  });
+</script>
+
+</body>
+</html>
+
+

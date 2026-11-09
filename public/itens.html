@@ -1,0 +1,291 @@
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Produtos Pet - AdoPetz</title>
+  <link rel="stylesheet" href="css/home.css" />
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f2f6fc;
+      margin: 0;
+      color: #333;
+    }
+    .catalogo-produtos {
+      padding: 40px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 30px;
+    }
+    .produto-card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      padding: 20px;
+      text-align: center;
+    }
+    .produto-card img {
+      max-width: 100%;
+      max-height: 150px;
+    }
+    .produto-card h3 {
+      margin: 15px 0 10px;
+    }
+    .quantidade {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin: 10px 0;
+    }
+    .quantidade button {
+      padding: 5px 10px;
+      font-size: 18px;
+      background: #1e90ff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .btn-adicionar {
+      margin-top: 10px;
+      padding: 10px;
+      width: 100%;
+      background: #1e90ff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+     .botao-carrinho {
+      position: fixed;
+      bottom: 25px;
+      right: 25px;
+      width: 60px;
+      height: 60px;
+      background-color: #1e90ff;
+      color: white;
+      border-radius: 50%;
+      font-size: 26px;
+      font-weight: bold;
+      text-align: center;
+      line-height: 60px;
+      text-decoration: none;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      z-index: 999;
+      transition: background 0.3s ease, transform 0.2s ease;
+    }
+    .botao-carrinho:hover {
+      background-color: #156ecf;
+      transform: scale(1.1);
+    }
+  </style>
+</head>
+<body>
+  
+ <header class="cabecalho">
+        <div class="container-cabecalho">
+            <div class="logo">
+                <img class="img-cabecalho" src="Images/Adopt 500x500.png" alt="Logo AdoPetz">
+                <h2 class="texto-logo">AdoPetz</h2>
+            </div>
+
+            <nav class="menu-nav">
+  <ul class="lista-menu-nav">
+    <li class="item-menu-nav"><a href="homelogada.html">Início</a></li>
+    <li class="item-menu-nav"><a href="catalogo.html">Adote</a></li>
+
+    <li class="item-menu-nav dropdown">
+      <a href="#" class="dropbtn">Recursos</a>
+      <ul class="dropdown-content">
+        <li><a href="calendario.html">Calendário</a></li>
+        <li><a href="blog.html">Blog</a></li>
+        <li><a href="denuncia.html">Denuncie</a></li>
+      </ul>
+    </li>
+
+    <li class="item-menu-nav dropdown">
+      <a href="#" class="dropbtn">Parceiro</a>
+      <ul class="dropdown-content">
+        <li><a href="itens.html">Loja</a></li>
+        <li><a href="mapa.html">Mapa</a></li>
+      </ul>
+    </li>
+
+    <li class="item-menu-nav dropdown">
+      <a href="#" class="dropbtn">Institucional</a>
+      <ul class="dropdown-content">
+        <li><a href="sobre-nos.html">Sobre Nós</a></li>
+        <li><a href="contribua.html">Contribua Conosco</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+            <div class="perfil-usuario" id="perfil-usuario">
+                <img class="foto-usuario" src="Images/meuamor.jpg" alt="Foto do Usuário">
+                <span class="nome-usuario">Karen</span>
+            </div>
+
+            <div class="mini-navbar" id="mini-navbar" style="display: none;">
+                <ul>
+                    <li><a href="perfil.html">Exibir Perfil</a></li>
+                    <li><a href="meus_anuncios.html">Meus Anuncios</a></li>
+                    <li><a href="chats.html">Meus Chats</a></li>
+                    <li><a href="home.html">Sair</a></li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+  <main class="catalogo-produtos" id="lista-produtos"></main>
+  <a href="carrinho.html" class="botao-carrinho" title="Ver carrinho">🛒</a>
+  <script>
+    const produtos = [
+      { nome: 'Coleira Estilosa', imagem: 'https://buddydog.com.br/wp-content/uploads/2024/09/Coleira-600x600.jpg', preco: 89.90, descricao: 'Ração completa para cães adultos de todas as raças. '},
+      { nome: 'Peitoral ', imagem: 'https://buddydog.com.br/wp-content/uploads/2025/06/triokit.viajem.12.jpg', preco: 29.90, descricao: 'Ração completa para cães adultos de todas as raças. '},
+      { nome: 'Brinquedo de Borracha', imagem: 'https://buddydog.com.br/wp-content/webp-express/webp-images/uploads/2025/04/Cinto-de-Seguranca.2-2-600x600.jpg.webp', preco: 19.90, descricao: 'Ração completa para cães adultos de todas as raças. ' },
+      { nome: 'Pneu de Borracha', imagem: 'https://img.irroba.com.br/fit-in/250x250/filters:format(webp):fill(fff):quality(80)/amorosso/catalog/pneu/pneu8.jpg', preco: 19.90, descricao: 'Ração completa para cães adultos de todas as raças. ' },
+      { nome: 'Pneu de Borracha', imagem: 'https://img.irroba.com.br/fit-in/250x250/filters:format(webp):fill(fff):quality(80)/amorosso/catalog/pneu/pneu1.jpg', preco: 19.90, descricao: 'Ração completa para cães adultos de todas as raças. ' },
+      { nome: 'Brinquedo de Borracha', imagem: 'https://img.irroba.com.br/fit-in/250x250/filters:format(webp):fill(fff):quality(80)/amorosso/catalog/novas-fotos-2019/ossos-grandes.jpg', preco: 19.90, descricao: 'Ração complet para cães adultos de todas as raças. ' },
+      { nome: 'Osso de Borracha', imagem: 'https://img.irroba.com.br/fit-in/600x600/filters:format(webp):fill(fff):quality(80)/amorosso/catalog/novas-fotos-2019/osso-grande-azulsite.jpg', preco: 19.90, descricao: 'Ração completa para cães adultos de todas as raças. ' },
+      { nome: 'Brinquedo de Borracha', imagem: 'https://img.irroba.com.br/fit-in/250x250/filters:format(webp):fill(fff):quality(80)/amorosso/catalog/novas-fotos-2019/ossos-grandes.jpg', preco: 19.90, descricao: 'Ração completa para cães adultos de todas as raças. ' },
+      { nome: 'Brinquedo de Borracha', imagem: 'https://img.irroba.com.br/fit-in/250x250/filters:format(webp):fill(fff):quality(80)/amorosso/catalog/novas-fotos-2019/ossos-grandes.jpg', preco: 19.90, descricao: 'Ração completa para cães adultos de todas as raças. ' },
+      { nome: 'Brinquedo de Borracha', imagem: 'https://img.irroba.com.br/fit-in/250x250/filters:format(webp):fill(fff):quality(80)/amorosso/catalog/novas-fotos-2019/ossos-grandes.jpg', preco: 19.90, descricao: 'Ração completa para cães adultos de todas as raças. ' },
+      { nome: 'Brinquedo de Borracha', imagem: ' https://img.irroba.com.br/fit-in/250x250/filters:format(webp):fill(fff):quality(80)/amorosso/catalog/novas-fotos-2019/ossos-grandes.jpg  ', preco: 19.90, descricao: 'Ração completa para cães adultos de todas as raças. ' },
+      { nome: 'Brinquedo de Borracha', imagem: 'https://img.irroba.com.br/fit-in/250x250/filters:format(webp):fill(fff):quality(80)/amorosso/catalog/novas-fotos-2019/ossos-grandes.jpg', preco: 19.90, descricao: 'Ração completa para cães adultos de todas as raças. ' }
+    ];
+
+    let carrinho = JSON.parse(localStorage.getItem('carrinho')) || [];
+
+    function renderizarProdutos() {
+      const lista = document.getElementById('lista-produtos');
+      lista.innerHTML = '';
+      produtos.forEach((produto, index) => {
+        const card = document.createElement('div');
+        card.className = 'produto-card';
+
+        card.innerHTML = `
+          <img src="${produto.imagem}" alt="${produto.nome}">
+          <h3>${produto.nome}</h3>
+          <p>R$ ${produto.preco.toFixed(2)}</p>
+          <div class="quantidade">
+            <button onclick="alterarQuantidade(${index}, -1)">-</button>
+            <span id="quantidade-${index}">0</span>
+            <button onclick="alterarQuantidade(${index}, 1)">+</button>
+          </div>
+          <button class="btn-adicionar" onclick="adicionarAoCarrinho(${index})">Adicionar ao Carrinho</button>
+        `;
+
+        lista.appendChild(card);
+      });
+    }
+
+    const quantidades = {};
+
+    function alterarQuantidade(index, delta) {
+      quantidades[index] = (quantidades[index] || 0) + delta;
+      if (quantidades[index] < 0) quantidades[index] = 0;
+      document.getElementById(`quantidade-${index}`).textContent = quantidades[index];
+    }
+
+    function adicionarAoCarrinho(index) {
+      const qtd = quantidades[index] || 0;
+      if (qtd === 0) return alert("Escolha a quantidade!");
+      const produto = produtos[index];
+      const itemExistente = carrinho.find(p => p.nome === produto.nome);
+      if (itemExistente) {
+        itemExistente.qtd += qtd;
+      } else {
+        carrinho.push({ ...produto, qtd });
+      }
+      localStorage.setItem('carrinho', JSON.stringify(carrinho));
+     alert(`${qtd}x "${produto.nome}" adicionado(s) ao carrinho!`);
+
+      quantidades[index] = 0;
+      document.getElementById(`quantidade-${index}`).textContent = 0;
+    }
+
+    renderizarProdutos();
+    
+    document.addEventListener("DOMContentLoaded", () => {
+        const perfilUsuario = document.getElementById("perfil-usuario");
+        const miniNavbar = document.getElementById("mini-navbar");
+
+        perfilUsuario.addEventListener("click", (e) => {
+            e.stopPropagation();
+
+            // Verifica se é "Entrar" → redireciona
+            const nomeUsuario = perfilUsuario.querySelector(".nome-usuario");
+            if (nomeUsuario && nomeUsuario.textContent.trim() === "Entrar") {
+                window.location.href = "login.html";
+            } else {
+                miniNavbar.style.display = (miniNavbar.style.display === "block") ? "none" : "block";
+            }
+        });
+
+        document.addEventListener("click", (e) => {
+            if (!miniNavbar.contains(e.target) && e.target !== perfilUsuario && !perfilUsuario.contains(e.target)) {
+                miniNavbar.style.display = "none";
+            }
+        });
+
+        const linksMiniNavbar = miniNavbar.querySelectorAll("a");
+        linksMiniNavbar.forEach(link => {
+            link.addEventListener("click", () => {
+                miniNavbar.style.display = "none";
+            });
+        });
+
+        inserirAnunciosDinamicos();
+
+        const linkSobreNos = document.querySelector('a[href="sobre-nos.html"]');
+        if (linkSobreNos) {
+            linkSobreNos.addEventListener("click", (e) => {
+                e.preventDefault();
+                const sessaoSobre = document.querySelector(".sessao-sobre");
+                if (sessaoSobre) {
+                    sessaoSobre.scrollIntoView({ behavior: "smooth" });
+                }
+            });
+        }
+    });
+
+    function logout() {
+        alert("Logout realizado!");
+        window.location.href = "login.html";
+    }
+
+    function carregarAnuncios() {
+        return JSON.parse(localStorage.getItem("anuncios")) || [];
+    }
+
+    function criarCard(anuncio) {
+        const card = document.createElement("div");
+        card.classList.add("card-animal");
+
+        card.innerHTML = `
+            <img class="imagem-animal" src="${anuncio.imagem}" alt="${anuncio.nome}">
+            <h3>${anuncio.nome}</h3>
+            <p>Idade: ${anuncio.idade} anos</p>
+            <p>Porte: ${anuncio.porte || "Desconhecido"}</p>
+            <a href="detalhes.html" class="btn-detalhes">Ver detalhes</a>
+        `;
+
+        return card;
+    }
+
+    function inserirAnunciosDinamicos() {
+        const container = document.getElementById("animais-vitrine");
+        const anuncios = carregarAnuncios();
+
+        anuncios.slice(0, 4).forEach(anuncio => {
+            const novoCard = criarCard(anuncio);
+            container.appendChild(novoCard);
+        });
+    }
+  
+  </script>
+</body>
+</html>

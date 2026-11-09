@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="Images/Adopt 500x500.png" type="image/x-icon">
+    <title>Login - Adopetz</title>
+    <link rel="stylesheet" href="css/login.css"> <!-- Estilo opcional -->
+   
+</head>
+<body>
+    <div class="container">
+        <!-- Adicionando a logo com link para a página inicial -->
+        <a href="homelogada.html">
+            <img src="Images/Adopt 75x75.png" alt="Logo Adopetz" class="logo">
+        </a>        
+        <h2>Login</h2>
+        <div id="error-message" style="display: none; color: red;"></div>
+        <form id="login-form" action="/login" method="POST" onsubmit="return handleLogin(event)">
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" placeholder="Digite seu email" required>
+
+            <label for="senha">Senha:</label>
+            <input type="password" id="senha" name="senha" placeholder="Digite sua senha" required>
+            <button type="submit">Entrar</button>
+            <a href="register.html">Registre-se</a>
+            <a href="redefinir-senha.html">Esqueceu a senha?</a>
+        </form>
+    </div>
+<script>
+async function handleLogin(event) {
+    event.preventDefault();
+    const email = document.getElementById('email').value.trim();
+    const senha = document.getElementById('senha').value;
+    const errorDiv = document.getElementById('error-message');
+
+    const res = await fetch('/api/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, senha })
+});
+    const data = await res.json();
+    if (res.ok) {
+        window.location.href = 'homelogada.html';
+    } else {
+        errorDiv.textContent = data.error || 'Credenciais inválidas';
+        errorDiv.style.display = 'block';
+    }
+    return false;
+}
+async function handleLogin(event) {
+    event.preventDefault();
+    const email = document.getElementById('email').value.trim();
+    const senha = document.getElementById('senha').value;
+    const errorDiv = document.getElementById('error-message');
+
+    // Esconde o erro antes de tentar novamente
+    errorDiv.style.display = 'none';
+
+    try {
+        const res = await fetch('/api/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, senha })
+        });
+        
+        const data = await res.json();
+        
+        if (res.ok) {
+            window.location.href = 'homelogada.html';
+        } else {
+            errorDiv.textContent = data.error || 'Credenciais inválidas';
+            errorDiv.style.display = 'block';
+        }
+    } catch (error) {
+        // Cai aqui se houver erro de rede (sem internet, servidor offline, etc)
+        console.error("Erro na requisição:", error);
+        errorDiv.textContent = 'Erro ao conectar com o servidor. Tente novamente mais tarde.';
+        errorDiv.style.display = 'block';
+    }
+    
+    return false;
+}
+</script>
+   
+</body>
+</html>
+
+

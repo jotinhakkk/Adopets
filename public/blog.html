@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Blog PetSocial</title>
+  <link rel="stylesheet" href="css/home.css" />
+  <style>
+  body {
+    background-color: #f4f6f8;
+    color: #333;
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .feed-container {
+    max-width: 700px;
+    margin: 30px auto 80px auto;
+    padding: 0 15px;
+  }
+
+  .post-card {
+    background-color: #ffffff;
+    border-radius: 16px;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    border-left: 5px solid #333;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .post-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  }
+
+  .post-fixed {
+    border-left-color: #ffd700;
+    background-color: #fffbe6;
+  }
+
+  .post-header {
+    display: flex;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid #eee;
+  }
+
+  .post-header img {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    margin-right: 12px;
+    object-fit: cover;
+  }
+
+  .user-info h4 {
+    margin: 0;
+    font-size: 16px;
+    color: #222;
+  }
+
+  .user-info span {
+    font-size: 12px;
+    color: #888;
+  }
+
+  .post-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .post-content {
+    padding: 18px 20px;
+    color: #324a7a;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  .post-actions {
+    display: flex;
+    justify-content: space-around;
+    padding: 14px 0;
+    border-top: 1px solid #eee;
+    color: #777;
+    font-size: 14px;
+    cursor: pointer;
+    background-color: #fafafa;
+    position: relative;
+  }
+
+  .post-actions div:hover {
+    color: #0077cc;
+  }
+
+  .comentarios {
+    padding: 10px 20px;
+    background: #f9f9f9;
+    border-top: 1px solid #ddd;
+  }
+  .comentario {
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: #555;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .comentario img {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  .popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    z-index: 1000;
+    width: 320px;
+    max-width: 90vw;
+  }
+  .overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 999;
+  }
+  .tags-container {
+    max-width: 700px;
+    margin: 10px auto 0 auto;
+    text-align: center;
+  }
+  .tag-btn {
+    display: inline-block;
+    background: #0077cc;
+    color: white;
+    padding: 10px 18px;
+    margin: 6px 6px 6px 0;
+    border-radius: 25px;
+    font-size: 14px;
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.25s;
+    border: none;
+  }
+  .tag-btn:hover, .tag-btn.active {
+    background: #005fa3;
+  }
+  .tags {
+    padding: 0 20px 10px 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .tags .tag {
+    background: #0077cc;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 16px;
+    font-size: 12px;
+    user-select: none;
+  }
+
+  #btnNovoPost {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    background: #0077cc;
+    border: none;
+    color: white;
+    padding: 14px 20px;
+    font-size: 24px;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    transition: background-color 0.25s;
+    z-index: 1100;
+  }
+  #btnNovoPost:hover {
+    background: #005fa3;
+  }
+  label {
+    display: block;
+    margin-top: 10px;
+    font-weight: 600;
+  }
+  textarea, input[type="text"] {
+    width: 100%;
+    padding: 6px 8px;
+    margin-top: 4px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    resize: vertical;
+  }
+  .checkbox-group {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 4px;
+  }
+  .checkbox-group label {
+    font-weight: normal;
+    cursor: pointer;
+  }
+.btn-cancelar {
+    background-color: #ddd;
+    color: #444;
+    border: none;
+    padding: 11px 24px;
+    border-radius: 12px;
+    font-size: 15px;
+    cursor: pointer;
+    transition: background-color 0.25s ease;
+  }
+  .btn-cancelar:hover {
+    background-color: #bbb;
+  }
+
+  /* Botão fechar no topo direito */
+  .popup .close-btn {
+    position: absolute;
+    top: 12px;
+    right: 14px;
+    background: transparent;
+    border: none;
+    font-size: 28px;
+    line-height: 1;
+    color: #666;
+    cursor: pointer;
+    transition: color 0.2s ease;
+  }
+  .popup .close-btn:hover {
+    color: #0077cc;
+  }
+
+  /* ========= 6. Sharing popup ========= */
+ .overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:999;display:none}
+  .popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #fff;
+    border-radius: 16px;
+    padding: 28px 30px 24px;
+    box-shadow: 0 8px 28px rgba(0,0,0,0.25);
+    width: 380px;
+    max-width: 90vw;
+    z-index: 1000;
+    display: none;
+    animation: fadeInPopup 0.3s ease forwards;
+    outline: none;
+  }
+  @keyframes fadeInPopup {
+    from {
+      opacity: 0;
+      transform: translate(-50%, -60%) scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+  }
+  .popup h3 {
+    margin: 0 0 6px;
+  }
+  .popup p {
+    font-size: 14px;
+    color: #555;
+    margin-top: -10px;
+    margin-bottom: 16px;
+  }
+  .popup label {
+    display: block;
+    margin-top: 14px;
+    font-weight: 600;
+    color: #333;
+    font-size: 14px;
+  }
+  .popup textarea {
+    width: 100%;
+    resize: vertical;
+    min-height: 90px;
+    font-size: 15px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1.5px solid #ccc;
+    transition: border-color 0.3s ease;
+    font-family: 'Inter', sans-serif;
+  }
+  .popup textarea:focus {
+    border-color: #0077cc;
+    outline: none;
+    box-shadow: 0 0 6px rgba(0,119,204,0.5);
+  }
+  .popup input[type="file"] {
+    margin-top: 6px;
+  }
+  .tag-buttons-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 6px;
+  }
+  .tag-button {
+    background: #e2e8f0;
+    color: #333;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 22px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.25s ease, color 0.25s ease;
+    user-select: none;
+  }
+  .tag-button:hover {
+    background: #b0c4de;
+  }
+  .tag-button.selected {
+    background: #0077cc;
+    color: #fff;
+    box-shadow: 0 0 8px rgba(0,119,204,0.7);
+  }
+  .popup-buttons {
+    margin-top: 22px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 14px;
+  }
+  .btn-postar {
+    background-color: #0077cc;
+    color: #fff;
+    border: none;
+    padding: 11px 24px;
+    border-radius: 12px;
+    font-size: 15px;
+    cursor: pointer;
+    transition: background-color 0.25s ease;
+  }
+  .btn-postar:hover {
+    background-color: #005fa3;
+  }
+  .btn-cancelar {
+    background-color: #ddd;
+    color: #444;
+    border: none;
+    padding: 11px 24px;
+    border-radius: 12px;
+    font-size: 15px;
+    cursor: pointer;
+    transition: background-color 0.25s ease;
+  }
+  .btn-cancelar:hover {
+    background-color: #bbb;
+  }
+
+  /* Botão fechar no topo direito */
+  .popup .close-btn {
+    position: absolute;
+    top: 12px;
+    right: 14px;
+    background: transparent;
+    border: none;
+    font-size: 28px;
+    line-height: 1;
+    color: #666;
+    cursor: pointer;
+    transition: color 0.2s ease;
+  }
+  .popup .close-btn:hover {
+    color: #0077cc;
+  }
+
+  /* ========= 6. Sharing popup ========= */
+  .share-popup {
+    position: absolute;
+    top: 35px;
+    right: 10px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,.15);
+    white-space: nowrap;
+    padding: 8px 12px;
+    display: none;
+    z-index: 50;
+  }
+  .share-popup a {
+    margin: 0 6px;
+    font-size: 18px;
+    color: #0077cc;
+    text-decoration: none;
+  }
+  .share-popup a:hover {
+    color: #005fa3;
+  }
+  
+  /* Scroll para comentários se necessário */
+  .comentarios {
+    max-height: 150px;
+    overflow-y: auto;
+  }
+  @media (max-width: 600px) {
+    .post-header img {
+      width: 36px;
+      height: 36px;
+    }
+
+    .user-info h4 {
+      font-size: 14px;
+    }
+
+    .post-content {
+      font-size: 14px;
+    }
+    .tag-btn {
+      font-size: 12px;
+      padding: 8px 14px;
+    }
+  }
+</style>
+
+ 
+</head>
+<body>
+
+<!-- Header igual ao da Home -->
+<header class="cabecalho">
+        <div class="container-cabecalho">
+            <div class="logo">
+                <img class="img-cabecalho" src="Images/Adopt 500x500.png" alt="Logo AdoPetz">
+                <h2 class="texto-logo">AdoPetz</h2>
+            </div>
+
+            <nav class="menu-nav">
+  <ul class="lista-menu-nav">
+    <li class="item-menu-nav"><a href="homelogada.html">Início</a></li>
+    <li class="item-menu-nav"><a href="catalogo.html">Adote</a></li>
+
+    <li class="item-menu-nav dropdown">
+      <a href="#" class="dropbtn">Recursos</a>
+      <ul class="dropdown-content">
+        <li><a href="calendario.html">Calendário</a></li>
+        <li><a href="blog.html">Blog</a></li>
+        <li><a href="denuncia.html">Denuncie</a></li>
+      </ul>
+    </li>
+
+    <li class="item-menu-nav dropdown">
+      <a href="#" class="dropbtn">Parceiro</a>
+      <ul class="dropdown-content">
+        <li><a href="itens.html">Loja</a></li>
+        <li><a href="mapa.html">Mapa</a></li>
+      </ul>
+    </li>
+
+    <li class="item-menu-nav dropdown">
+      <a href="#" class="dropbtn">Institucional</a>
+      <ul class="dropdown-content">
+        <li><a href="sobre-nos.html">Sobre Nós</a></li>
+        <li><a href="contribua.html">Contribua Conosco</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+            <div class="perfil-usuario" id="perfil-usuario">
+                <img class="foto-usuario" src="Images/Cliente.jpg" alt="Foto do Usuário">
+                <span class="nome-usuario">Karen</span>
+            </div>
+
+            <div class="mini-navbar" id="mini-navbar" style="display: none;">
+                <ul>
+                    <li><a href="perfil.html">Exibir Perfil</a></li>
+                    <li><a href="meus_anuncios.html">Meus Anuncios</a></li>
+                    <li><a href="chats.html">Meus Chats</a></li>
+                    <li><a href="home.html">Sair</a></li>
+                </ul>
+            </div>
+        </div>
+    </header>
+<h1 style="text-align: center; margin-top: 20px; color: #0078d7;">Blog PetSocial</h1>
+
+<!-- Filtro de tags -->
+<div id="filter-container" class="tags-container" aria-label="Filtro de tags">
+  <h3> Filtre pelas nossas Tags.</h3>
+  <button class="tag-btn active" data-tag="">Todas</button>
+  <button class="tag-btn" data-tag="#cachorro">#cachorro</button>
+  <button class="tag-btn" data-tag="#gato">#gato</button>
+  <button class="tag-btn" data-tag="#passeio">#passeio</button>
+</div>
+
+<button id="btnNovoPost" aria-label="Criar novo post" title="Criar novo post">+</button>
+
+<div class="feed-container" id="feed-container">
+
+  <!-- Post Fixado de Campanha -->
+  <div class="post-card post-fixed" data-tags="#cachorro">
+    <div class="post-header">
+      <img src="https://randomuser.me/api/portraits/men/1.jpg" alt="Admin">
+      <div class="user-info">
+        <h4>Admin PetSocial <span style="background:#ffcc00; color:#333; padding:2px 6px; border-radius:5px; font-size:10px;">FIXADO</span></h4>
+        <span>Hoje - 08:00</span>
+      </div>
+    </div>
+    <a href="https://carioca.rio/servicos/smpda-campanha-municipal-de-adocao-adote-um-amigo/" target="_blank" style="text-decoration: none; color: inherit;">
+  <div class="post-image">
+    <img src="https://images.unsplash.com/photo-1555685812-4b943f1cb0eb?auto=format&fit=crop&w=800&q=80" alt="Campanha">
+  </div>
+  <div class="post-content">
+    <p>🌟 Nova Campanha de Adoção em andamento! Conheça os pets disponíveis e ajude a compartilhar.</p>
+  </div>
+</a>
+  <div class="tags">
+    <span class="tag">#cachorro</span>
+  </div>
+  <div class="post-actions">
+    <div>👍 Curtir</div>
+    <div>💬 Comentar</div>
+    <div class="btn-share">🔁 Compartilhar
+      <div class="share-popup">
+        <a href="#" data-social="whatsapp" title="Compartilhar no WhatsApp">📱</a>
+        <a href="#" data-social="facebook" title="Compartilhar no Facebook">📘</a>
+        <a href="#" data-social="twitter" title="Compartilhar no Twitter">🐦</a>
+      </div>
+    </div>
+  </div>
+  </div>
+
+  <!-- Post de Usuário -->
+  <div class="post-card" data-tags="#passeio">
+    <div class="post-header">
+      <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Ana">
+      <div class="user-info">
+        <h4>Lucia Brito</h4>
+        <span>3 horas atrás</span>
+      </div>
+    </div>
+    <div class="post-image">
+      <img src="https://placedog.net/800/300?id=2" alt="Cachorro">
+    </div>
+    <div class="post-content">
+      <p>Hoje foi só por aqui relaxando 🧃</p>
+    </div>
+    <div class="tags">
+      <span class="tag">#passeio</span>
+    </div>
+    <div class="post-actions">
+      <div>👍 Curtir</div>
+      <div>💬 Comentar</div>
+      <div class="btn-share">🔁 Compartilhar
+        <div class="share-popup">
+          <a href="#" data-social="whatsapp" title="Compartilhar no WhatsApp">📱</a>
+          <a href="#" data-social="facebook" title="Compartilhar no Facebook">📘</a>
+          <a href="#" data-social="twitter" title="Compartilhar no Twitter">🐦</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="post-card" data-tags="#cachorro">
+    <div class="post-header">
+      <img src="https://randomuser.me/api/portraits/men/46.jpg" alt="Ana">
+      <div class="user-info">
+        <h4>Marcos Jorge</h4>
+        <span>4 horas atrás</span>
+      </div>
+    </div>
+    <div class="post-image">
+      <img src="https://lereaprender.com.br/wp-content/uploads/2020/02/fotos-de-cachorro-engra%C3%A7adas.jpg" alt="Cachorro">
+    </div>
+    <div class="post-content">
+      <p>Meus Filinhos 🐶🐱</p>
+    </div>
+    <div class="tags">
+      <span class="tag">#cachorro</span>
+    </div>
+    <div class="post-actions">
+      <div>👍 Curtir</div>
+      <div>💬 Comentar</div>
+      <div class="btn-share">🔁 Compartilhar
+        <div class="share-popup">
+          <a href="#" data-social="whatsapp" title="Compartilhar no WhatsApp">📱</a>
+          <a href="#" data-social="facebook" title="Compartilhar no Facebook">📘</a>
+          <a href="#" data-social="twitter" title="Compartilhar no Twitter">🐦</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="post-card" data-tags="#passeio #cachorro">
+    <div class="post-header">
+      <img src="https://randomuser.me/api/portraits/women/45.jpg" alt="Ana">
+      <div class="user-info">
+        <h4>Ana Souza</h4>
+        <span>2 horas atrás</span>
+      </div>
+    </div>
+    <div class="post-image">
+      <img src="https://lereaprender.com.br/wp-content/uploads/2020/02/animaisdomesticos.jpg" alt="Cachorro">
+    </div>
+    <div class="post-content">
+      <p>Hoje foi dia de passeio no parque! 🐾☀️</p>
+    </div>
+    <div class="tags">
+      <span class="tag">#passeio</span>
+      <span class="tag">#cachorro</span>
+    </div>
+    <div class="post-actions">
+      <div>👍 Curtir</div>
+      <div>💬 Comentar</div>
+      <div class="btn-share">🔁 Compartilhar
+        <div class="share-popup">
+          <a href="#" data-social="whatsapp" title="Compartilhar no WhatsApp">📱</a>
+          <a href="#" data-social="facebook" title="Compartilhar no Facebook">📘</a>
+          <a href="#" data-social="twitter" title="Compartilhar no Twitter">🐦</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="post-card" data-tags="#gato">
+    <div class="post-header">
+      <img src="https://randomuser.me/api/portraits/women/43.jpg" alt="Ana">
+      <div class="user-info">
+        <h4>Maria Rosa</h4>
+        <span>2 horas atrás</span>
+      </div>
+    </div>
+    <div class="post-image">
+      <img src="https://blog-static.petlove.com.br/wp-content/uploads/2020/09/Cachorro-gato-Petlove-1.jpg" alt="Cachorro">
+    </div>
+    <div class="post-content">
+      <p>Hoje só deu eles no meu sofá 💆‍♂️</p>
+    </div>
+    <div class="tags">
+      <span class="tag">#gato</span>
+    </div>
+    <div class="post-actions">
+      <div>👍 Curtir</div>
+      <div>💬 Comentar</div>
+      <div class="btn-share">🔁 Compartilhar
+        <div class="share-popup">
+          <a href="#" data-social="whatsapp" title="Compartilhar no WhatsApp">📱</a>
+          <a href="#" data-social="facebook" title="Compartilhar no Facebook">📘</a>
+          <a href="#" data-social="twitter" title="Compartilhar no Twitter">🐦</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Comentários e Popups serão inseridos dinamicamente -->
+
+</div>
+
+<!-- Popup Comentário -->
+<div id="popup-comentario" class="popup" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="popup-comentario-title">
+  <h3 id="popup-comentario-title">Adicionar Comentário</h3>
+  <textarea id="input-comentario" rows="4" placeholder="Escreva seu comentário..."></textarea>
+  <button id="btn-enviar-comentario">Enviar</button>
+  <button onclick="fecharPopupComentario()" style="margin-left:10px;">Cancelar</button>
+</div>
+
+<!-- Popup Novo Post -->
+<div id="popup-novo-post" class="popup" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="popup-novo-post-title">
+  <h3 id="popup-novo-post-title">Novo Post</h3>
+  <label for="novo-post-texto">Texto:</label>
+  <textarea id="novo-post-texto" rows="3" placeholder="Escreva algo..."></textarea>
+
+  <label for="novo-post-img">URL da imagem:</label>
+  <input type="text" id="novo-post-img" placeholder="https://">
+
+  <label>Tags:</label>
+  <div id="checkbox-tags" class="checkbox-group">
+    <label><input type="checkbox" value="#cachorro"> #cachorro</label>
+    <label><input type="checkbox" value="#gato"> #gato</label>
+    <label><input type="checkbox" value="#passeio"> #passeio</label>
+  </div>
+
+  <button onclick="criarNovoPost()">Postar</button>
+  <button onclick="fecharPopup()" style="margin-left:10px;">Cancelar</button>
+</div>
+
+<div id="popup-overlay" class="overlay" style="display:none;" onclick="fecharPopup()"></div>
+
+<script>
+  const perfil = {
+    nome: "Karen",
+    foto: "Images/meuamor.jpg"
+  };
+
+  let posts = document.querySelectorAll('.post-card');
+  let feed = document.getElementById('feed-container');
+
+  // Adiciona botões tag clicáveis (filtro)
+  const tagButtons = document.querySelectorAll('.tag-btn');
+  tagButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      tagButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      const tag = btn.getAttribute('data-tag');
+      posts.forEach(post => {
+        const postTags = post.dataset.tags || '';
+        if(tag === '' || postTags.includes(tag)) {
+          post.style.display = 'block';
+        } else {
+          post.style.display = 'none';
+        }
+      });
+    });
+  });
+
+  // Tornar tags em posts clicáveis para filtro
+  function adicionarFiltroTagsPosts() {
+    document.querySelectorAll('.post-card .tags .tag').forEach(tagSpan => {
+      tagSpan.style.cursor = 'pointer';
+      tagSpan.addEventListener('click', () => {
+        const tag = tagSpan.textContent.trim();
+        tagButtons.forEach(b => {
+          b.classList.toggle('active', b.getAttribute('data-tag') === tag);
+        });
+        tagButtons.forEach(b => b.click());
+      });
+    });
+  }
+  adicionarFiltroTagsPosts();
+
+  // Variável para armazenar post em edição
+  let postEmEdicao = null;
+
+  // Configura ações curtir, comentar, compartilhar, editar e excluir
+  function configurarAcoes(postCard) {
+    // Curtir
+    const curtirBtn = postCard.querySelector('.post-actions > div:nth-child(1)');
+    let liked = false;
+    curtirBtn.addEventListener('click', () => {
+      liked = !liked;
+      curtirBtn.style.color = liked ? '#0077cc' : '#777';
+      curtirBtn.textContent = liked ? '👍 Curtido' : '👍 Curtir';
+    });
+
+    // Comentar
+    const comentarBtn = postCard.querySelector('.post-actions > div:nth-child(2)');
+    comentarBtn.addEventListener('click', () => abrirPopupComentario(postCard));
+
+    // Compartilhar
+    const compartilharBtn = postCard.querySelector('.btn-share');
+    const popupShare = compartilharBtn.querySelector('.share-popup');
+    compartilharBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isVisible = popupShare.style.display === 'block';
+      document.querySelectorAll('.share-popup').forEach(p => p.style.display = 'none');
+      popupShare.style.display = isVisible ? 'none' : 'block';
+    });
+
+    document.addEventListener('click', () => {
+      document.querySelectorAll('.share-popup').forEach(p => p.style.display = 'none');
+    });
+
+    popupShare.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', e => {
+        e.preventDefault();
+        const social = link.dataset.social;
+        const postText = postCard.querySelector('.post-content').textContent;
+        const url = encodeURIComponent(window.location.href);
+        const text = encodeURIComponent(postText);
+
+        let shareUrl = '';
+        if (social === 'whatsapp') {
+          shareUrl = `https://api.whatsapp.com/send?text=${text}%20${url}`;
+        } else if (social === 'facebook') {
+          shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}&quote=${text}`;
+        } else if (social === 'twitter') {
+          shareUrl = `https://twitter.com/intent/tweet?text=${text}&url=${url}`;
+        }
+        window.open(shareUrl, '_blank', 'width=600,height=400');
+      });
+    });
+
+    // Criar container para comentários se não existir
+    if (!postCard.querySelector('.comentarios')) {
+      const comentariosDiv = document.createElement('div');
+      comentariosDiv.classList.add('comentarios');
+      postCard.appendChild(comentariosDiv);
+    }
+
+    // Só posts do usuário (nome = "Você") têm editar/excluir
+    const nomeUsuario = postCard.querySelector('.user-info h4').textContent.trim();
+    if (nomeUsuario === "Você") {
+      let acoesDiv = postCard.querySelector('.post-actions');
+
+      // Evita criar duplicados caso já tenha
+      if (!acoesDiv.querySelector('.btn-editar')) {
+        // Criar botões editar e excluir
+        const btnEditar = document.createElement('div');
+        btnEditar.classList.add('btn-editar');
+        btnEditar.style.cursor = 'pointer';
+        btnEditar.style.color = '#0077cc';
+        btnEditar.style.userSelect = 'none';
+        btnEditar.textContent = '✏️ Editar';
+
+        const btnExcluir = document.createElement('div');
+        btnExcluir.classList.add('btn-excluir');
+        btnExcluir.style.cursor = 'pointer';
+        btnExcluir.style.color = '#cc0000';
+        btnExcluir.style.userSelect = 'none';
+        btnExcluir.textContent = '🗑️ Excluir';
+
+        acoesDiv.appendChild(btnEditar);
+        acoesDiv.appendChild(btnExcluir);
+
+        btnEditar.addEventListener('click', () => abrirPopupEdicao(postCard));
+        btnExcluir.addEventListener('click', () => {
+          if(confirm('Tem certeza que deseja excluir este post?')) {
+            postCard.remove();
+          }
+        });
+      }
+    }
+  }
+
+  // Abrir popup para adicionar comentário
+  let postAtual = null;
+  function abrirPopupComentario(postCard) {
+    postAtual = postCard;
+    document.getElementById('popup-comentario').style.display = 'block';
+    document.getElementById('popup-overlay').style.display = 'block';
+    document.getElementById('input-comentario').value = '';
+    document.getElementById('input-comentario').focus();
+  }
+  function fecharPopupComentario() {
+    document.getElementById('popup-comentario').style.display = 'none';
+    document.getElementById('popup-overlay').style.display = 'none';
+    postAtual = null;
+  }
+
+  // Enviar comentário e mostrar na lista
+  document.getElementById('btn-enviar-comentario').addEventListener('click', () => {
+    const texto = document.getElementById('input-comentario').value.trim();
+    if (!texto) return alert('Comentário vazio não pode ser enviado.');
+
+    const comentariosDiv = postAtual.querySelector('.comentarios');
+
+    const novoComentario = document.createElement('div');
+    novoComentario.classList.add('comentario');
+    novoComentario.innerHTML = `
+      <img src="${perfil.foto}" alt="${perfil.nome}">
+      <strong>${perfil.nome}:</strong> <span>${texto}</span>
+    `;
+    comentariosDiv.appendChild(novoComentario);
+    fecharPopupComentario();
+  });
+
+  // Mostrar popup novo post
+  document.getElementById('btnNovoPost').addEventListener('click', () => {
+    postEmEdicao = null; // novo post, não edição
+    document.getElementById('novo-post-texto').value = '';
+    document.getElementById('novo-post-img').value = '';
+    document.querySelectorAll('#checkbox-tags input[type=checkbox]').forEach(cb => cb.checked = false);
+
+    document.getElementById('popup-novo-post').style.display = 'block';
+    document.getElementById('popup-overlay').style.display = 'block';
+  });
+
+  // Criar novo post ou salvar edição
+  function criarNovoPost() {
+    const texto = document.getElementById('novo-post-texto').value.trim();
+    const imgUrl = document.getElementById('novo-post-img').value.trim();
+    const checkedTags = Array.from(document.querySelectorAll('#checkbox-tags input[type=checkbox]:checked')).map(c => c.value);
+    if (!texto) return alert('Texto do post é obrigatório.');
+    if (!imgUrl) return alert('URL da imagem é obrigatória.');
+    if (checkedTags.length === 0) return alert('Escolha ao menos uma tag.');
+
+    if (postEmEdicao) {
+      // Salvar edição
+      postEmEdicao.querySelector('.post-content').textContent = texto;
+      const imgTag = postEmEdicao.querySelector('.post-image img');
+      imgTag.src = imgUrl;
+      imgTag.onerror = function() { this.onerror=null; this.src='https://via.placeholder.com/800x300?text=Imagem+inválida'; };
+      postEmEdicao.dataset.tags = checkedTags.join(' ');
+      const tagsDiv = postEmEdicao.querySelector('.tags');
+      tagsDiv.innerHTML = checkedTags.map(t => `<span class="tag">${t}</span>`).join(' ');
+
+      // Atualiza filtro das tags clicáveis nos posts
+      adicionarFiltroTagsPosts();
+
+      fecharPopup();
+      postEmEdicao = null;
+      return;
+    }
+
+    // Criar novo post
+    const postCard = document.createElement('div');
+    postCard.classList.add('post-card');
+    postCard.dataset.tags = checkedTags.join(' ');
+
+    postCard.innerHTML = `
+      <div class="post-header">
+        <img src="${perfil.foto}" alt="${perfil.nome}">
+        <div class="user-info">
+          <h4>Você</h4>
+          <span>Agora</span>
+        </div>
+      </div>
+      <div class="post-image">
+        <img src="${imgUrl}" alt="Imagem do Post" onerror="this.onerror=null;this.src='https://via.placeholder.com/800x300?text=Imagem+inválida';" />
+      </div>
+      <div class="post-content">${texto}</div>
+      <div class="tags">${checkedTags.map(t => `<span class="tag">${t}</span>`).join(' ')}</div>
+      <div class="post-actions">
+        <div>👍 Curtir</div>
+        <div>💬 Comentar</div>
+        <div class="btn-share">🔁 Compartilhar
+          <div class="share-popup">
+            <a href="#" data-social="whatsapp" title="Compartilhar no WhatsApp">📱</a>
+            <a href="#" data-social="facebook" title="Compartilhar no Facebook">📘</a>
+            <a href="#" data-social="twitter" title="Compartilhar no Twitter">🐦</a>
+          </div>
+        </div>
+      </div>
+    `;
+
+    feed.insertBefore(postCard, feed.firstChild);
+
+    configurarAcoes(postCard);
+    adicionarFiltroTagsPosts();
+    fecharPopup();
+  }
+
+  function fecharPopup() {
+    document.getElementById('popup-novo-post').style.display = 'none';
+    document.getElementById('popup-overlay').style.display = 'none';
+  }
+
+  // Abrir popup de edição, preencher campos com dados do post
+  function abrirPopupEdicao(postCard) {
+    postEmEdicao = postCard;
+    const texto = postCard.querySelector('.post-content').textContent;
+    const imgUrl = postCard.querySelector('.post-image img').src;
+    const tags = postCard.dataset.tags.split(' ');
+
+    document.getElementById('novo-post-texto').value = texto;
+    document.getElementById('novo-post-img').value = imgUrl;
+
+    document.querySelectorAll('#checkbox-tags input[type=checkbox]').forEach(cb => {
+      cb.checked = tags.includes(cb.value);
+    });
+
+    document.getElementById('popup-novo-post').style.display = 'block';
+    document.getElementById('popup-overlay').style.display = 'block';
+  }
+
+  // Função para simular logout permanece igual
+  function logout() {
+    alert("Você foi desconectado.");
+    window.location.href = "home.html"; 
+  }
+
+  // Mini-navbar toggle permanece igual
+  document.addEventListener("DOMContentLoaded", () => {
+    const perfilUsuario = document.getElementById("perfil-usuario");
+    const miniNavbar = document.getElementById("mini-navbar");
+
+    perfilUsuario.addEventListener("click", (e) => {
+      e.stopPropagation();
+      miniNavbar.style.display = (miniNavbar.style.display === "block") ? "none" : "block";
+    });
+
+    document.addEventListener("click", (e) => {
+      if (!miniNavbar.contains(e.target) && e.target !== perfilUsuario && !perfilUsuario.contains(e.target)) {
+        miniNavbar.style.display = "none";
+      }
+    });
+
+    const linksMiniNavbar = miniNavbar.querySelectorAll("a");
+    linksMiniNavbar.forEach(link => {
+      link.addEventListener("click", () => {
+        miniNavbar.style.display = "none";
+      });
+    });
+
+    // Configura ações nos posts existentes
+    posts.forEach(post => configurarAcoes(post));
+  });
+</script>
+
+</body>
+</html>

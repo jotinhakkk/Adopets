@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Parceiros</title>
+
+  <!-- Leaflet core -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+  <!-- Leaflet MarkerCluster -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+  <link rel="stylesheet" href="css/home.css">
+  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+
+  <style>
+    body{margin:0;font-family:'Segoe UI',sans-serif;background:#f8f9fa;color:#333}
+    header{background:#007bff;color:#fff;text-align:center;padding:1rem;font-size:1.5rem;font-weight:600}
+    .map-wrapper{width:100%;height:80vh}
+    #map{width:100%;height:100%}
+    .legenda{
+      display:flex;flex-wrap:wrap;justify-content:center;gap:.6rem;
+      background:#fff;padding:.8rem 1rem;box-shadow:0 2px 8px rgba(0,0,0,.1);border-radius:0 0 10px 10px
+    }
+    .item-legenda{
+      display:flex;align-items:center;gap:.4rem;border:2px solid #dee2e6;border-radius:8px;
+      padding:.35rem .6rem;font-size:.9rem;cursor:pointer;transition:.25s
+    }
+    .item-legenda img{width:24px;height:24px}
+    .item-legenda:hover,.item-legenda.ativo{border-color:#007bff;background:#e6f0ff;box-shadow:0 0 5px rgba(0,123,255,.25)}
+    @media(max-width:600px){.item-legenda{font-size:.8rem}}
+  </style>
+</head>
+<body>
+
+<header class="cabecalho">
+        <div class="container-cabecalho">
+            <div class="logo">
+                <img class="img-cabecalho" src="Images/Adopt 500x500.png" alt="Logo AdoPetz">
+                <h2 class="texto-logo">AdoPetz</h2>
+            </div>
+
+            <nav class="menu-nav">
+  <ul class="lista-menu-nav">
+    <li class="item-menu-nav"><a href="homelogada.html">Início</a></li>
+    <li class="item-menu-nav"><a href="catalogo.html">Adote</a></li>
+
+    <li class="item-menu-nav dropdown">
+      <a href="#" class="dropbtn">Recursos</a>
+      <ul class="dropdown-content">
+        <li><a href="calendario.html">Calendário</a></li>
+        <li><a href="blog.html">Blog</a></li>
+        <li><a href="denuncia.html">Denuncie</a></li>
+      </ul>
+    </li>
+
+    <li class="item-menu-nav dropdown">
+      <a href="#" class="dropbtn">Parceiro</a>
+      <ul class="dropdown-content">
+        <li><a href="itens.html">Loja</a></li>
+        <li><a href="mapa.html">Mapa</a></li>
+      </ul>
+    </li>
+
+    <li class="item-menu-nav dropdown">
+      <a href="#" class="dropbtn">Institucional</a>
+      <ul class="dropdown-content">
+        <li><a href="sobre-nos.html">Sobre Nós</a></li>
+        <li><a href="contribua.html">Contribua Conosco</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+            <div class="perfil-usuario" id="perfil-usuario">
+                <img class="foto-usuario" src="Images/meuamor.jpg" alt="Foto do Usuário">
+                <span class="nome-usuario">Karen</span>
+            </div>
+
+            <div class="mini-navbar" id="mini-navbar" style="display: none;">
+                <ul>
+                    <li><a href="perfil.html">Exibir Perfil</a></li>
+                    <li><a href="meus_anuncios.html">Meus Anuncios</a></li>
+                    <li><a href="chats.html">Meus Chats</a></li>
+                    <li><a href="home.html">Sair</a></li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+<div class="map-wrapper"><div id="map"></div></div>
+
+<!-- Legenda/Filtro -->
+<div class="legenda" id="filtros">
+  <div class="item-legenda ativo" data-tipo="ong">
+    <img src="https://cdn-icons-png.flaticon.com/512/616/616408.png" alt=""> ONG
+  </div>
+  <div class="item-legenda ativo" data-tipo="petshop">
+    <img src="https://cdn-icons-png.flaticon.com/512/2839/2839868.png" alt=""> Petshop
+  </div>
+  <div class="item-legenda ativo" data-tipo="vet">
+    <img src="https://cdn-icons-png.flaticon.com/512/9184/9184277.png" alt=""> Veterinário
+  </div>
+  <div class="item-legenda ativo" data-tipo="pessoa">
+    <img src="https://cdn-icons-png.flaticon.com/512/1077/1077063.png" alt=""> Pessoa Doando
+  </div>
+</div>
+
+<script>
+/* -------- Configuração geral -------- */
+const BBOX   = [-22.98, -43.25, -22.85, -43.10]; // S W N E
+const CENTER = [-22.93, -43.18];
+const OVERPASS = "https://overpass-api.de/api/interpreter";
+const Q_TIMEOUT = 25;
+
+/* Ícones */
+const icones = {
+  ong     : L.icon({iconUrl:'https://cdn-icons-png.flaticon.com/512/616/616408.png',  iconSize:[30,30]}),
+  petshop : L.icon({iconUrl:'https://cdn-icons-png.flaticon.com/512/2839/2839868.png', iconSize:[30,30]}),
+  vet     : L.icon({iconUrl:'https://cdn-icons-png.flaticon.com/512/9184/9184277.png', iconSize:[30,30]}),
+  pessoa  : L.icon({iconUrl:'https://cdn-icons-png.flaticon.com/512/1077/1077063.png', iconSize:[30,30]})
+};
+
+/* Mapa */
+const map = L.map('map').setView(CENTER, 13);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap'}).addTo(map);
+
+/* Layers por categoria (com Cluster) */
+const categorias = ['ong','petshop','vet','pessoa'];
+const grupos = {};
+categorias.forEach(tp=>{
+  grupos[tp] = L.markerClusterGroup({maxClusterRadius:60});
+  map.addLayer(grupos[tp]);
+});
+
+/* Consulta Overpass */
+async function consultaOverpass(q){
+  const url = `${OVERPASS}?data=[out:json][timeout:${Q_TIMEOUT}];${q};out center;`;
+  const r = await fetch(url);
+  if(!r.ok) throw new Error('Overpass erro');
+  return (await r.json()).elements;
+}
+
+/* Adiciona marcador */
+function addMarker(lat,lng,icon,popup,categ){
+  const m = L.marker([lat,lng],{icon}).bindPopup(popup);
+  grupos[categ].addLayer(m);
+}
+
+/* Carrega dados reais + ONGs fixas */
+async function carregarDados(){
+  // Petshops
+  const pet = await consultaOverpass(`node["shop"="pet"](${BBOX.join(',')})`);
+  pet.forEach(p=> addMarker(p.lat,p.lon,icones.petshop,`<b>${p.tags.name||'Petshop'}</b>`,'petshop'));
+
+  // Veterinários
+  const vet = await consultaOverpass(`node["amenity"="veterinary"](${BBOX.join(',')})`);
+  vet.forEach(v=> addMarker(v.lat,v.lon,icones.vet,`<b>${v.tags.name||'Clínica Veterinária'}</b>`,'vet'));
+
+  // ONGs fixas (exemplo)
+  [
+    {lat:-22.9141,lng:-43.1968,nome:"Instituto Vida Animal"},
+    {lat:-22.9234,lng:-43.2351,nome:"ONG Amigo Fiel"}
+  ].forEach(o=> addMarker(o.lat,o.lng,icones.ong,`<b>${o.nome}</b>`,'ong'));
+
+  // Depois de carregar bases, adiciona pessoas doando
+  adicionarDoadoresProximos(8);
+
+  ajustarVisibilidade();
+}
+
+/* Gera doadores próximos de um ponto real, evitando mar (lng > -43.19) */
+function adicionarDoadoresProximos(qtd){
+  const baseMarkers = [];
+  ['petshop','vet','ong'].forEach(tp=>{
+    grupos[tp].eachLayer(m=>baseMarkers.push(m.getLatLng()));
+  });
+  if(baseMarkers.length===0) return;
+
+  const nomes  = ["Maria","João","Carla","Pedro","Ana","Luiz","Patrícia","Ricardo"];
+  const itens  = ["ração","cobertor","areia","brinquedos","petiscos"];
+
+  let criados=0, tentativas=0;
+  while(criados<qtd && tentativas<qtd*10){
+    tentativas++;
+    const base = baseMarkers[Math.floor(Math.random()*baseMarkers.length)];
+    // deslocamento dentro de ~200‑300 m
+    const lat = base.lat + (Math.random()-0.5)*0.003;
+    const lng = base.lng + (Math.random()-0.5)*0.003;
+
+    // dentro do bbox e fora do mar simples
+    if(lat<BBOX[0]||lat>BBOX[2]||lng<BBOX[1]||lng>BBOX[3]||lng<-43.19) continue;
+
+    const nome  = nomes[Math.floor(Math.random()*nomes.length)];
+    const item  = itens[Math.floor(Math.random()*itens.length)];
+    addMarker(lat,lng,icones.pessoa,`<b>${nome}</b><br>Doando ${item}`, 'pessoa');
+    criados++;
+  }
+}
+
+/* Filtro (mostrar/ocultar categorias) */
+function ajustarVisibilidade(){
+  categorias.forEach(tp=>{
+    if(document.querySelector(`.item-legenda[data-tipo="${tp}"]`).classList.contains('ativo')){
+      map.addLayer(grupos[tp]);
+    }else{
+      map.removeLayer(grupos[tp]);
+    }
+  });
+}
+
+/* Eventos de clique legenda */
+document.querySelectorAll('.item-legenda').forEach(el=>{
+  el.addEventListener('click',()=>{
+    el.classList.toggle('ativo');
+    ajustarVisibilidade();
+  });
+});
+
+/* Inicializa */
+carregarDados().catch(console.error);
+</script>
+</body>
+</html>

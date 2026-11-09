@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calendário de Eventos - PetSocial</title>
+  <link rel="stylesheet" href="css/home.css">
+  <style>
+    body {
+      background-color: #1e3a5f;
+      margin: 0;
+      padding: 0;
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .calendar-container {
+      max-width: 1000px;
+      margin: 30px auto;
+      background-color: #ffffff;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+      color: #1e3a5f;
+    }
+
+    .month-header {
+      text-align: center;
+      font-size: 32px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    .month-header button {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      font-size: 26px;
+      cursor: pointer;
+      color: #1e3a5f;
+      font-weight: bold;
+    }
+
+    .month-header .prev { left: 10px; }
+    .month-header .next { right: 10px; }
+
+    .calendar {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
+    }
+
+    .day, .day-name {
+      border: 1px solid #ccc;
+      min-height: 100px;
+      text-align: center;
+      padding: 6px;
+      border-radius: 8px;
+      position: relative;
+    }
+
+    .day-name {
+      background-color: #f0f4f8;
+      font-weight: bold;
+    }
+
+    .day .day-number {
+      font-weight: bold;
+      margin-bottom: 6px;
+    }
+
+    .event-indicator {
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      color: #fff;
+      margin-top: 3px;
+      display: inline-block;
+    }
+
+    .adoção { background-color: #1e90ff; }
+    .vacinação { background-color: #28a745; }
+    .workshop { background-color: #f39c12; }
+    .doação { background-color: #e91e63; }
+    .passeio { background-color: #9b59b6; }
+
+    .tooltip {
+      visibility: hidden;
+      opacity: 0;
+      background-color: #324a7a;
+      color: #fff;
+      text-align: left;
+      border-radius: 8px;
+      padding: 10px;
+      position: absolute;
+      z-index: 1;
+      bottom: 120%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 230px;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+      font-size: 13px;
+      line-height: 1.5;
+      transition: opacity 0.3s ease;
+    }
+
+    .day:hover .tooltip {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .tooltip::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      margin-left: -6px;
+      border-width: 6px;
+      border-style: solid;
+      border-color: #324a7a transparent transparent transparent;
+    }
+
+    .empty {
+      background: #f8f8f8;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Header padrão da Home -->
+<header class="cabecalho">
+        <div class="container-cabecalho">
+            <div class="logo">
+                <img class="img-cabecalho" src="Images/Adopt 500x500.png" alt="Logo AdoPetz">
+                <h2 class="texto-logo">AdoPetz</h2>
+            </div>
+
+            <nav class="menu-nav">
+  <ul class="lista-menu-nav">
+    <li class="item-menu-nav"><a href="homelogada.html">Início</a></li>
+    <li class="item-menu-nav"><a href="catalogo.html">Adote</a></li>
+
+    <li class="item-menu-nav dropdown">
+      <a href="#" class="dropbtn">Recursos</a>
+      <ul class="dropdown-content">
+        <li><a href="calendario.html">Calendário</a></li>
+        <li><a href="blog.html">Blog</a></li>
+        <li><a href="denuncia.html">Denuncie</a></li>
+      </ul>
+    </li>
+
+    <li class="item-menu-nav dropdown">
+      <a href="#" class="dropbtn">Parceiro</a>
+      <ul class="dropdown-content">
+        <li><a href="itens.html">Loja</a></li>
+        <li><a href="mapa.html">Mapa</a></li>
+      </ul>
+    </li>
+
+    <li class="item-menu-nav dropdown">
+      <a href="#" class="dropbtn">Institucional</a>
+      <ul class="dropdown-content">
+        <li><a href="sobre-nos.html">Sobre Nós</a></li>
+        <li><a href="contribua.html">Contribua Conosco</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+            <div class="perfil-usuario" id="perfil-usuario">
+                <img class="foto-usuario" src="Images/meuamor.jpg" alt="Foto do Usuário">
+                <span class="nome-usuario">Karen</span>
+            </div>
+
+            <div class="mini-navbar" id="mini-navbar" style="display: none;">
+                <ul>
+                    <li><a href="perfil.html">Exibir Perfil</a></li>
+                    <li><a href="meus_anuncios.html">Meus Anuncios</a></li>
+                    <li><a href="chats.html">Meus Chats</a></li>
+                    <li><a href="home.html">Sair</a></li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+<div class="calendar-container">
+  <div class="month-header">
+    <button class="prev" onclick="changeMonth(-1)">❮</button>
+    <span id="monthYear"></span>
+    <button class="next" onclick="changeMonth(1)">❯</button>
+  </div>
+  <div class="calendar" id="calendar"></div>
+</div>
+
+<script>
+  const eventsByMonth = {
+    '2025-5': {
+      5: [
+        {
+          type: 'adoção',
+          title: 'Campanha de Adoção',
+          desc: 'Feira de adoção com mais de 30 pets disponíveis.',
+          local: 'Praça Central, Bairro Jardim'
+        }
+      ],
+      12: [
+        {
+          type: 'vacinação',
+          title: 'Vacinação Gratuita',
+          desc: 'Vacinas básicas para cães e gatos.',
+          local: 'UBS Animal - Rua das Flores, 88'
+        },
+        {
+          type: 'adoção',
+          title: 'Feira Pet',
+          desc: 'Evento com brindes e adoções.',
+          local: 'Shopping PetVille, estacionamento G3'
+        }
+      ],
+      18: [
+        {
+          type: 'workshop',
+          title: 'Workshop de Primeiros Socorros',
+          desc: 'Aprenda como socorrer seu pet em emergências.',
+          local: 'Auditório da Faculdade PetAmigos'
+        }
+      ],
+      21: [
+        {
+          type: 'doação',
+          title: 'Dia de Doações',
+          desc: 'Arrecadação de ração e cobertores.',
+          local: 'ONG Patinhas Unidas - Rua do Bem, 123'
+        }
+      ],
+      25: [
+        {
+          type: 'passeio',
+          title: 'Encontro de Cães',
+          desc: 'Passeio coletivo na Orla da Lagoa.',
+          local: 'Orla da Lagoa - Ponto de Encontro 3'
+        },
+        {
+          type: 'workshop',
+          title: 'Palestra sobre Filhotes',
+          desc: 'Cuidados especiais com filhotes.',
+          local: 'Centro Cultural PetCare'
+        }
+      ]
+    }
+  };
+
+  let currentMonth = 5;
+  let currentYear = 2025;
+
+  function buildCalendar(month, year) {
+    const calendar = document.getElementById('calendar');
+    calendar.innerHTML = '';
+
+    const monthNames = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
+    document.getElementById('monthYear').textContent = `${monthNames[month]} ${year}`;
+
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+    const dayNames = ["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"];
+    dayNames.forEach(name => {
+      const dayNameDiv = document.createElement('div');
+      dayNameDiv.className = 'day-name';
+      dayNameDiv.textContent = name;
+      calendar.appendChild(dayNameDiv);
+    });
+
+    for (let i = 0; i < firstDay; i++) {
+      const empty = document.createElement('div');
+      empty.className = 'day empty';
+      calendar.appendChild(empty);
+    }
+
+    const key = `${year}-${month}`;
+    const events = eventsByMonth[key] || {};
+
+    for (let day = 1; day <= daysInMonth; day++) {
+      const dayDiv = document.createElement('div');
+      dayDiv.className = 'day';
+
+      const dayNum = document.createElement('div');
+      dayNum.className = 'day-number';
+      dayNum.textContent = day;
+      dayDiv.appendChild(dayNum);
+
+      if (events[day]) {
+        let tooltipContent = `<strong>Eventos:</strong><br>`;
+        events[day].forEach(evt => {
+          const indicator = document.createElement('div');
+          indicator.className = `event-indicator ${evt.type}`;
+          indicator.textContent = evt.title;
+          dayDiv.appendChild(indicator);
+          tooltipContent += `<strong>${evt.title}</strong>: ${evt.desc}<br><em>Local: ${evt.local}</em><br><br>`;
+        });
+
+        const tooltip = document.createElement('div');
+        tooltip.className = 'tooltip';
+        tooltip.innerHTML = tooltipContent;
+        dayDiv.appendChild(tooltip);
+      }
+
+      calendar.appendChild(dayDiv);
+    }
+  }
+
+  function changeMonth(direction) {
+    currentMonth += direction;
+    if (currentMonth < 0) {
+      currentMonth = 11;
+      currentYear--;
+    } else if (currentMonth > 11) {
+      currentMonth = 0;
+      currentYear++;
+    }
+    buildCalendar(currentMonth, currentYear);
+  }
+
+  buildCalendar(currentMonth, currentYear);
+
+   document.addEventListener("DOMContentLoaded", () => {
+        const perfilUsuario = document.getElementById("perfil-usuario");
+        const miniNavbar = document.getElementById("mini-navbar");
+
+        perfilUsuario.addEventListener("click", (e) => {
+            e.stopPropagation();
+            miniNavbar.style.display = (miniNavbar.style.display === "block") ? "none" : "block";
+        });
+
+        document.addEventListener("click", (e) => {
+            if (!miniNavbar.contains(e.target) && e.target !== perfilUsuario && !perfilUsuario.contains(e.target)) {
+                miniNavbar.style.display = "none";
+            }
+        });
+
+        const linksMiniNavbar = miniNavbar.querySelectorAll("a");
+        linksMiniNavbar.forEach(link => {
+            link.addEventListener("click", () => {
+                miniNavbar.style.display = "none";
+            });
+        }); });
+</script>
+
+</body>
+</html>

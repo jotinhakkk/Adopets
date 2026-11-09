@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="shortcut icon" href="Images/Adopt 500x500.png" type="image/x-icon">
+<link rel="stylesheet" href="css/home.css" />
+<title>Configurações do Site</title>
+<style>
+
+
+  h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #0078d7;
+ position: relative;
+    top: 40px
+  }
+
+  .config-container {
+    max-width: 500px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgb(0 0 0 / 0.1);
+    padding: 30px 40px;
+    position: relative;
+    top: 50px
+  }
+
+  .config-item {
+    margin-bottom: 25px;
+  }
+
+  label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #555;
+  }
+
+  select, input[type="number"], input[type="color"], input[type="range"] {
+    width: 100%;
+    padding: 7px 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 15px;
+  }
+
+  input[type="checkbox"] {
+    margin-right: 8px;
+    transform: scale(1.2);
+    cursor: pointer;
+  }
+
+  .checkbox-label {
+    display: flex;
+    align-items: center;
+    font-weight: 600;
+    color: #555;
+  }
+
+  .buttons {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  button {
+    background-color: #0078d7;
+    border: none;
+    color: white;
+    padding: 12px 25px;
+    font-size: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.25s ease;
+  }
+
+  button:hover {
+    background-color: #005ea1;
+  }
+
+  button.reset-btn {
+    background-color: #a94442;
+  }
+
+  button.reset-btn:hover {
+    background-color: #7e3531;
+  }
+
+  .value-display {
+    font-weight: 600;
+    color: #444;
+    margin-top: 4px;
+    text-align: right;
+  }
+</style>
+<header class="cabecalho">
+        <div class="container-cabecalho">
+            <div class="logo">
+                <img class="img-cabecalho" src="Images/Adopt 500x500.png" alt="Logo AdoPetz">
+                <h2 class="texto-logo">AdoPetz</h2>
+            </div>
+
+            <nav class="menu-nav">
+  <ul class="lista-menu-nav">
+    <li class="item-menu-nav"><a href="homelogada.html">Início</a></li>
+    <li class="item-menu-nav"><a href="catalogo.html">Adote</a></li>
+
+    <li class="item-menu-nav dropdown">
+      <a href="#" class="dropbtn">Recursos</a>
+      <ul class="dropdown-content">
+        <li><a href="calendario.html">Calendário</a></li>
+        <li><a href="blog.html">Blog</a></li>
+        <li><a href="denuncia.html">Denuncie</a></li>
+      </ul>
+    </li>
+
+    <li class="item-menu-nav dropdown">
+      <a href="#" class="dropbtn">Parceiro</a>
+      <ul class="dropdown-content">
+        <li><a href="itens.html">Loja</a></li>
+        <li><a href="mapa.html">Mapa</a></li>
+      </ul>
+    </li>
+
+    <li class="item-menu-nav dropdown">
+      <a href="#" class="dropbtn">Institucional</a>
+      <ul class="dropdown-content">
+        <li><a href="sobre-nos.html">Sobre Nós</a></li>
+        <li><a href="contribua.html">Contribua Conosco</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+            <div class="perfil-usuario" id="perfil-usuario">
+                <img class="foto-usuario" src="Images/meuamor.jpg" alt="Foto do Usuário">
+                <span class="nome-usuario">Karen</span>
+            </div>
+
+            <div class="mini-navbar" id="mini-navbar" style="display: none;">
+                <ul>
+                    <li><a href="perfil.html">Exibir Perfil</a></li>
+                    <li><a href="meus_anuncios.html">Meus Anuncios</a></li>
+                    <li><a href="chats.html">Meus Chats</a></li>
+                    <li><a href="home.html">Sair</a></li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+</head>
+
+<body>
+  <h1>Configurações do Site</h1>
+  <div class="config-container">
+    <div class="config-item">
+      <label for="modo">Modo:</label>
+      <select id="modo">
+        <option value="claro">Claro</option>
+        <option value="escuro">Escuro</option>
+      </select>
+    </div>
+
+    <div class="config-item">
+      <label for="fonte">Fonte:</label>
+      <select id="fonte">
+        <option value="Arial">Arial</option>
+        <option value="Verdana">Verdana</option>
+        <option value="Tahoma">Tahoma</option>
+        <option value="Georgia">Georgia</option>
+        <option value="Courier New">Courier New</option>
+      </select>
+    </div>
+
+    <div class="config-item">
+      <label for="tamanhoFonte">Tamanho da Fonte: <span id="tamanhoFonteVal">15</span> </label>
+      <input type="range" id="tamanhoFonte" min="10" max="30" value="15" />
+    </div>
+
+    <div class="config-item">
+      <label for="brilho">Brilho: <span id="brilhoVal">100</span></label>
+      <input type="range" id="brilho" min="50" max="150" value="100" />
+    </div>
+
+    <div class="config-item">
+      <label for="corPrimaria">Cor Primária:</label>
+      <input type="color" id="corPrimaria" value="#0078d7" />
+    </div>
+
+    <div class="config-item checkbox-label">
+      <input type="checkbox" id="animacoes" checked />
+      <label for="animacoes" style="margin:0;">Ativar animações</label>
+    </div>
+
+    <div class="buttons">
+      <button id="btnSalvar">Salvar</button>
+      <button id="btnResetar" class="reset-btn">Resetar</button>
+    </div>
+  </div>
+
+  <script>
+       document.addEventListener("DOMContentLoaded", () => {
+        const perfilUsuario = document.getElementById("perfil-usuario");
+        const miniNavbar = document.getElementById("mini-navbar");
+
+        perfilUsuario.addEventListener("click", (e) => {
+            e.stopPropagation();
+            miniNavbar.style.display = (miniNavbar.style.display === "block") ? "none" : "block";
+        });
+
+        document.addEventListener("click", (e) => {
+            if (!miniNavbar.contains(e.target) && e.target !== perfilUsuario && !perfilUsuario.contains(e.target)) {
+                miniNavbar.style.display = "none";
+            }
+        });
+
+        const linksMiniNavbar = miniNavbar.querySelectorAll("a");
+        linksMiniNavbar.forEach(link => {
+            link.addEventListener("click", () => {
+                miniNavbar.style.display = "none";
+            });
+        });
+      });
+    function atualizarValor(idInput, idDisplay, unit = '') {
+      const input = document.getElementById(idInput);
+      const display = document.getElementById(idDisplay);
+      display.textContent = input.value + unit;
+      input.addEventListener('input', () => {
+        display.textContent = input.value + unit;
+      });
+    }
+
+    atualizarValor('tamanhoFonte', 'tamanhoFonteVal', ' px');
+    atualizarValor('brilho', 'brilhoVal', '%');
+
+    function salvarConfiguracoes() {
+      const config = {
+        modo: document.getElementById('modo').value,
+        fonte: document.getElementById('fonte').value,
+        tamanhoFonte: document.getElementById('tamanhoFonte').value,
+        brilho: document.getElementById('brilho').value,
+        corPrimaria: document.getElementById('corPrimaria').value,
+        animacoes: document.getElementById('animacoes').checked,
+      };
+      localStorage.setItem('configuracoesSite', JSON.stringify(config));
+      alert('Configurações salvas!');
+    }
+
+    function carregarConfiguracoes() {
+      const config = JSON.parse(localStorage.getItem('configuracoesSite'));
+      if (!config) return;
+
+      document.getElementById('modo').value = config.modo || 'claro';
+      document.getElementById('fonte').value = config.fonte || 'Arial';
+      document.getElementById('tamanhoFonte').value = config.tamanhoFonte || 15;
+      document.getElementById('brilho').value = config.brilho || 100;
+      document.getElementById('corPrimaria').value = config.corPrimaria || '#0078d7';
+      document.getElementById('animacoes').checked = config.animacoes !== undefined ? config.animacoes : true;
+
+      document.getElementById('tamanhoFonteVal').textContent = config.tamanhoFonte + ' px';
+      document.getElementById('brilhoVal').textContent = config.brilho + '%';
+    }
+
+    function resetarConfiguracoes() {
+      if (!confirm('Deseja realmente resetar as configurações para o padrão?')) return;
+
+      localStorage.removeItem('configuracoesSite');
+      carregarConfiguracoes();
+      alert('Configurações resetadas para padrão!');
+    }
+
+    document.getElementById('btnSalvar').addEventListener('click', salvarConfiguracoes);
+    document.getElementById('btnResetar').addEventListener('click', resetarConfiguracoes);
+
+    carregarConfiguracoes();
+  </script>
+</body>
+</html>

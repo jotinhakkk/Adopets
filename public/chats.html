@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chat</title>
+    <link rel="stylesheet" href="css/chats.css" />
+    <style>
+        /* Adicione estilos básicos para as mensagens */
+        .message {
+            padding: 8px 12px;
+            margin: 6px 0;
+            border-radius: 12px;
+            max-width: 70%;
+            word-wrap: break-word;
+            font-size: 14px;
+            position: relative;
+        }
+        .message.sent {
+            background-color: #1e90ff;
+            color: white;
+            align-self: flex-end;
+        }
+        .message.received {
+            background-color: #ddd;
+            color: #333;
+            align-self: flex-start;
+        }
+        .timestamp {
+            font-size: 10px;
+            color: #666;
+            margin-top: 2px;
+            text-align: right;
+        }
+        #messagesContainer {
+            display: flex;
+            flex-direction: column;
+            height: 350px;
+            overflow-y: auto;
+            padding: 10px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+        /* Outras estilizações, se precisar, podem continuar */
+    </style>
+    
+</head>
+<body>
+    <a href="catalogo.html" class="logout-button">
+        <img src="images/sair.png" alt="Voltar" class="logout-icon" />
+    </a>
+
+    <div class="chat-container">
+        <div class="chat-list">
+            <h2>Conversas</h2>
+            <ul id="chatList"></ul>
+        </div>
+
+        <div class="chat-box">
+            <div id="chatHeader" class="chat-header">
+                <img id="animalImage" src="" alt="Imagem do Animal" class="animal-img" />
+                <h3 id="chatTitle"></h3>
+                
+            </div>
+
+            <div id="messagesContainer" class="messages-container">
+                <!-- Mensagens serão adicionadas aqui -->
+            </div>
+
+            <div class="message-input">
+                <input type="text" id="messageInput" placeholder="Digite sua mensagem..." />
+                <button id="sendButton">Enviar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+       document.addEventListener("DOMContentLoaded", async () => {
+    const chatList = document.getElementById("chatList");
+    const chatTitle = document.getElementById("chatTitle");
+    const animalImage = document.getElementById("animalImage");
+    const messagesContainer = document.getElementById("messagesContainer");
+    const sendButton = document.getElementById("sendButton");
+    const messageInput = document.getElementById("messageInput");
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const animalIdParam = urlParams.get("animalId");
+
+    if (animalIdParam) {
+        await fetch('/api/chats', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ animal_id: animalIdParam })
+        });
+    }
+
+    const res = await fetch('/api/chats');
+    const chats = await res.json();
+    let chatAtivo = null;
+
+    chats.forEach((chat) => {
+        const li = document.createElement("li");
+        li.innerHTML = `<img src="${chat.imagem}" alt="${chat.nome}"><div>${chat.nome}</div>`;
+        li.style.cursor = 'pointer';
+        li.addEventListener("click", () => carregarChat(chat));
+        chatList.appendChild(li);
+    });
+
+    async function carregarChat(chat) {
+        chatAtivo = chat;
+        chatTitle.textContent = chat.nome;
+        animalImage.src = chat.imagem;
+        await atualizarMensagens();
+    }
+
+    async function atualizarMensagens() {
+        if (!chatAtivo) return;
+        const resMsg = await fetch(`/api/chats/${chatAtivo.chat_id}/mensagens`);
+        const lista = await resMsg.json();
+        messagesContainer.innerHTML = "";
+        lista.forEach(msg => {
+            const div = document.createElement("div");
+            div.className = `message ${msg.tipo}`;
+            div.textContent = msg.texto;
+            const spanTime = document.createElement("div");
+            spanTime.className = "timestamp";
+            spanTime.textContent = new Date(msg.timestamp).toLocaleString('pt-BR');
+            div.appendChild(spanTime);
+            messagesContainer.appendChild(div);
+        });
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+
+    sendButton.addEventListener("click", async () => {
+        if (!chatAtivo || !messageInput.value.trim()) return;
+        await fetch(`/api/chats/${chatAtivo.chat_id}/mensagens`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ texto: messageInput.value.trim() })
+        });
+        messageInput.value = "";
+        await atualizarMensagens();
+    });
+
+    if (chats.length > 0) {
+        const inicial = animalIdParam ? chats.find(c => String(c.animal_id) === String(animalIdParam)) : chats[0];
+        carregarChat(inicial || chats[0]);
+    }
+});
+    </script>
+</body>
+</html>
