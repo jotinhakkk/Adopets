@@ -43,7 +43,7 @@ Cada serviço recebeu uma rampa de **1 → 10 → 50 → 100 usuários virtuais 
 2. **O ponto de saturação da vazão é diferente.** O Login satura por volta de **50 VUs** (≈ 3.800–4.100 req/s). O Cadastro satura antes, entre **10 e 50 VUs** (780 → 1.008 req/s), chegando a ≈ 1.270 req/s com 100 VUs.
 3. **Escrever custa mais que ler:** com 1 VU o Cadastro leva ≈ 8 ms por requisição contra ≈ 1,1 ms do Login, e a vazão máxima do Cadastro é cerca de 3× menor.
 4. **Depois de saturar, a latência cresce na mesma proporção dos VUs**, sem gerar erros (efeito de fila; ver [Lei de Little](#53-verificação-de-consistência-lei-de-little)).
-5. **Dois comportamentos instáveis merecem investigação:** a queda temporária de vazão do Login no patamar de 100 VUs e as paradas curtas (≈ 3–4 s) do Cadastro. Ambos têm hipóteses na [seção 6](#6-levantamento-de-hipóteses-dos-gargalos).
+5. **Dois comportamentos instáveis merecem investigação:** a queda temporária de vazão do Login no patamar de 100 VUs e as paradas curtas (≈ 3–4 s) do Cadastro. Ambos têm hipóteses nas seções [3.4](#34-levantamento-de-hipóteses-dos-gargalos-login) (Login) e [4.4](#44-levantamento-de-hipóteses-dos-gargalos-cadastro) (Cadastro), resumidas na [seção 6](#6-levantamento-de-hipóteses-dos-gargalos).
 6. ⚠️ **O Login atual compara a senha em texto puro** (sem hash). Os números do Login valem para essa implementação e tendem a ser otimistas em relação a uma versão segura (hipótese L4).
 
 ![Comparação dos indicadores globais](testes-de-carga/graficos/2026-11-09/comparacao_resumo.png)
@@ -81,6 +81,10 @@ Definido em [`login.js`](testes-de-carga/login.js) e [`cadastro.js`](testes-de-c
 | 270–300 | subida | 50 → 100 |
 | 300–360 | patamar | 100 |
 | 360–390 | descida | 100 → 0 |
+
+**Cenário de concorrência submetido ao longo do tempo** (o mesmo nos dois testes; sobre cada patamar estão os resultados medidos):
+
+![Cenário de concorrência submetido ao longo do tempo](testes-de-carga/graficos/2026-11-09/concorrencia_cenario.png)
 
 - **Sem tempo de espera** (`THINK_TIME=0`): cada VU dispara a próxima requisição assim que recebe a resposta. Isso mede a capacidade máxima do serviço, não o uso de pessoas reais.
 - **Limites (thresholds) usados como SLA de exemplo:** `http_req_failed < 1 %` e `http_req_duration p(95) < 1000 ms`.
@@ -132,15 +136,38 @@ Fluxo de dados: `k6 run` gera o JSON bruto (vários GB, não versionado) → `an
 
 > A linha de 1 VU inclui os 94 s iniciais; as demais, 60 s cada.
 
-**Evolução no tempo** (concorrência, vazão em janelas de 1 s e 10 s, latência em janelas de 5 s):
+**Evolução no tempo.** O painel superior mostra a **concorrência submetida** (VUs simultâneos); o do meio, a **vazão** (janelas de 1 s e 10 s); o inferior, a **latência** (janelas de 5 s). Os três compartilham o mesmo eixo de tempo:
 
 ![Login — evolução durante o teste](testes-de-carga/graficos/2026-11-09/login_evolucao.png)
+
+**Concorrência (limite de requisições simultâneas).** O cenário submetido foi a rampa 1 → 10 → 50 → 100 VUs (gráfico da [seção 2.2](#22-perfil-de-carga-igual-nos-dois-serviços) e painel superior acima). Como não há tempo de espera, cada VU mantém uma requisição em andamento, então **100 VUs ≈ 100 requisições simultâneas**. O máximo testado foi 100 simultâneas e **o limite de falha não foi atingido**: 0 % de erro e p95 de 88,87 ms nesse patamar. O que saturou foi a vazão, por volta de **50 VUs** (≈ 3.800–4.100 req/s).
 
 **Leitura dos resultados**
 
 - A vazão sobe junto com os VUs até **≈ 4.100 req/s com 50 VUs** (pico de 4.353 req/s em uma janela de 1 s) e não passa disso.
 - **No patamar de 100 VUs a vazão não se mantém:** nos primeiros 30 s (t = 300–330 s) ela cai para ≈ 1.410 req/s com latência média de 71 ms; nos 30 s seguintes (t = 330–360 s) volta para ≈ 3.270 req/s e 35 ms. Não houve nenhum erro. Por isso a média do patamar (2.342 req/s) esconde **dois regimes** diferentes.
 - O maior pico de latência (345 ms) ocorreu no início do patamar de 50 VUs (t ≈ 210 s); no patamar de 100 VUs o máximo foi de 342 ms, justamente no início da queda de vazão descrita acima.
+
+### 3.4 Levantamento de hipóteses dos gargalos (Login)
+
+Estas são **hipóteses**: as medições mostram *o que* aconteceu, mas não monitoraram CPU, memória e estado do MySQL durante o teste. Cada item traz a evidência encontrada e um experimento para confirmar ou descartar.
+
+**L1 — CPU do Node (processo de thread única) como teto de vazão.**
+- *Evidência:* a vazão para de crescer em ≈ 4.100 req/s a partir de 50 VUs, embora a consulta seja trivial (busca pelo índice `UNIQUE` de `email` numa tabela de 3 linhas) e, com 1 VU, a latência seja de apenas 1,1 ms.
+- *Como validar:* observar o processo `node` durante o teste (um núcleo próximo de 100 % é a assinatura desse gargalo) ou subir duas instâncias (`cluster`/PM2) e verificar se a vazão máxima quase dobra.
+
+**L2 — Fila no pool de 10 conexões do MySQL.**
+- *Evidência:* com 100 VUs há até 90 requisições esperando conexão (`waitForConnections: true`, sem limite de fila), e a latência cresce na proporção dos VUs. Porém, com 50 VUs já havia 40 requisições na fila sem queda de vazão, então o pool **sozinho não explica** a perda a 100 VUs.
+- *Como validar:* repetir o teste com `connectionLimit` de 10, 25 e 50 e comparar o p95 em 100 VUs.
+
+**L3 — Instabilidade ambiental no patamar de 100 VUs** (vazão cai de ≈ 4.000 para ≈ 1.400 req/s por ≈ 35 s e volta sozinha, sem erros e com carga constante).
+- *Hipóteses:* k6, Node e MySQL disputando CPU na mesma máquina (o i5-13400 mistura núcleos de desempenho e de eficiência), pausa de coleta de lixo (GC) do Node ou escalonamento do Windows. Uma falha de lógica da aplicação seria menos provável, pois o comportamento se desfaz sem mudança de carga.
+- *Como validar:* repetir o teste pelo menos 3 vezes (se a queda mudar de horário ou sumir, é ambiental), rodar o k6 em outra máquina e iniciar o Node com `--trace-gc`.
+
+**L4 — Custo de autenticação irrealisticamente baixo.**
+- *Evidência no código:* o `SELECT` compara `senha` em texto puro (`WHERE email = ? AND senha = ?`) e o `bcrypt`, embora esteja no `package.json`, **não é usado** no `server.js`.
+- *Impacto esperado (estimativa, não medida):* com hash de senha, cada login passaria a gastar CPU na verificação e o gargalo mudaria para esse cálculo; a vazão máxima provavelmente seria ordens de grandeza menor.
+- *Como validar:* implementar a verificação com hash e repetir `login.js`.
 
 ---
 
@@ -176,9 +203,11 @@ Fluxo de dados: `k6 run` gera o JSON bruto (vários GB, não versionado) → `an
 | 50 | 1.007,6 | 49,40 | 80,60 | 1.149,86 | 0 % |
 | 100 | 1.268,6 | 78,62 | 111,34 | 242,60 | 0 % |
 
-**Evolução no tempo:**
+**Evolução no tempo.** Painel superior: concorrência submetida (VUs simultâneos); meio: vazão; inferior: latência. Mesmo eixo de tempo nos três:
 
 ![Cadastro — evolução durante o teste](testes-de-carga/graficos/2026-11-09/cadastro_evolucao.png)
+
+**Concorrência (limite de requisições simultâneas).** Mesmo cenário do Login: rampa 1 → 10 → 50 → 100 VUs (gráfico da [seção 2.2](#22-perfil-de-carga-igual-nos-dois-serviços) e painel superior acima), ou seja, **até ≈ 100 requisições simultâneas**. O limite de falha também não foi atingido: 0 % de erro e p95 de 111,34 ms com 100 VUs. A vazão satura bem antes, **entre 10 e 50 VUs** (780 → 1.008 req/s), e chega a ≈ 1.270 req/s com 100 VUs.
 
 **Leitura dos resultados**
 
@@ -188,6 +217,27 @@ Fluxo de dados: `k6 run` gera o JSON bruto (vários GB, não versionado) → `an
   - t ≈ 211–214 s (50 VUs): a vazão chegou a **25 req/s** em um segundo e a latência máxima foi de **1.150 ms**.
   - t ≈ 282–285 s (71–76 VUs): vazão de 226–404 req/s e latência máxima de 839 ms.
 - O teste inseriu **≈ 308.800 usuários** na tabela `usuario` (veja como limpar na [seção 8](#8-como-reproduzir)).
+
+### 4.4 Levantamento de hipóteses dos gargalos (Cadastro)
+
+Estas são **hipóteses**: as medições mostram *o que* aconteceu, mas não monitoraram CPU, memória e estado do MySQL durante o teste. Cada item traz a evidência encontrada e um experimento para confirmar ou descartar.
+
+**C1 — Custo da escrita durável (gravação do log de transações do InnoDB a cada `COMMIT`).**
+- *Evidência:* com 1 VU o Cadastro leva ≈ 8 ms por requisição contra ≈ 1,1 ms do Login (≈ 7 ms a mais por `SELECT` + `INSERT`). A vazão com 10 VUs é 6,2× a de 1 VU (confirmações de transações agrupadas) e depois satura em ≈ 1.000–1.300 req/s.
+- *Como validar:* verificar o valor de `innodb_flush_log_at_trx_commit` (1 = padrão, grava a cada commit); como experimento *apenas de diagnóstico*, repetir com o valor 2 e comparar. Acompanhar `Innodb_os_log_fsyncs` em `SHOW GLOBAL STATUS`.
+
+**C2 — Manutenção de três índices e crescimento da tabela.**
+- *Evidência:* cada `INSERT` atualiza a chave primária e os dois índices `UNIQUE` (`email` e `cpf`). No patamar de 100 VUs, com carga constante, a vazão cai de ≈ 1.570 para ≈ 1.040 req/s e a latência sobe de 63 ms para 96 ms enquanto a tabela cresce (≈ 308.800 linhas ao final).
+- *Como validar:* repetir o teste com a tabela já populada e vazia e comparar; olhar `SHOW ENGINE INNODB STATUS` durante o patamar de 100 VUs.
+
+**C3 — Paradas curtas (3–4 s) em t ≈ 212 s e t ≈ 282 s.**
+- *Evidência:* vazão a 25 req/s e latência máxima de 1.150 ms (50 VUs); depois 226–404 req/s e 839 ms. Os dois eventos estão ≈ 70 s distantes, mas **dois pontos não provam periodicidade**.
+- *Hipóteses:* descarga em rajada de páginas/log do InnoDB (checkpoint), pausa de GC do Node ou outro processo do Windows.
+- *Como validar:* ativar o *slow query log* (`long_query_time = 0.2`), acompanhar `Innodb_buffer_pool_pages_flushed` e rodar o Node com `--trace-gc`; repetir e ver se as paradas reaparecem nos mesmos instantes.
+
+**C4 — Fila no pool de 10 conexões, com duas passagens por requisição.**
+- *Evidência:* a requisição faz duas chamadas separadas a `pool.query` (verificação de duplicidade e `INSERT`), sem transação. Com 100 VUs, 100 requisições disputam 10 conexões e cada uma entra na fila duas vezes; a latência cresce na proporção dos VUs.
+- *Como validar:* variar o `connectionLimit` (como em L2) e testar uma versão que faça só o `INSERT`, tratando o erro de duplicidade (`ER_DUP_ENTRY`) com a resposta `409`. Isso elimina uma ida ao banco por requisição e também a janela de corrida entre a verificação e a inserção.
 
 ---
 
@@ -208,7 +258,7 @@ Fluxo de dados: `k6 run` gera o JSON bruto (vários GB, não versionado) → `an
 
 ### 5.2 Ao longo do tempo
 
-Como os dois testes usam os mesmos degraus, as curvas podem ser sobrepostas (janelas de 10 s):
+Como os dois testes usam o mesmo cenário de concorrência, as curvas podem ser sobrepostas. O painel superior é a concorrência submetida (idêntica nos dois testes); os demais, a vazão e a latência (janelas de 10 s):
 
 ![Login x Cadastro no tempo](testes-de-carga/graficos/2026-11-09/comparacao_evolucao.png)
 
@@ -226,51 +276,24 @@ Como não há tempo de espera, a concorrência é fixa (= VUs) e deve valer **la
 | 50 | 13,05 ms | 12,92 ms | 49,62 ms | 49,40 ms |
 | 100 | 42,70 ms | 42,57 ms | 78,83 ms | 78,62 ms |
 
-Isso valida a medição e mostra que, depois de saturar, a latência é principalmente **tempo de espera em fila**. Não diz, porém, *onde* está a fila (Node, pool de conexões, MySQL ou o próprio k6 disputando CPU). Essa é a pergunta da próxima seção.
+Isso valida a medição e mostra que, depois de saturar, a latência é principalmente **tempo de espera em fila**. Não diz, porém, *onde* está a fila (Node, pool de conexões, MySQL ou o próprio k6 disputando CPU). Essa é a pergunta das hipóteses de gargalo (seções 3.4 e 4.4, resumidas na seção 6).
 
 ---
 
 ## 6. Levantamento de hipóteses dos gargalos
 
-Os dados abaixo são **hipóteses**: as medições mostram *o que* aconteceu, mas não monitoraram CPU, memória e estado do MySQL durante o teste. Cada item traz a evidência encontrada e um experimento para confirmar ou descartar.
+As hipóteses de cada serviço estão detalhadas **dentro da seção do próprio serviço**, cada uma com a evidência encontrada nos dados e um experimento para confirmar ou descartar: [3.4 — Login](#34-levantamento-de-hipóteses-dos-gargalos-login) e [4.4 — Cadastro](#44-levantamento-de-hipóteses-dos-gargalos-cadastro). O quadro abaixo é o resumo.
 
-### 6.1 Login
-
-**L1 — CPU do Node (processo de thread única) como teto de vazão.**
-- *Evidência:* a vazão para de crescer em ≈ 4.100 req/s a partir de 50 VUs, embora a consulta seja trivial (busca pelo índice `UNIQUE` de `email` numa tabela de 3 linhas) e, com 1 VU, a latência seja de apenas 1,1 ms.
-- *Como validar:* observar o processo `node` durante o teste (um núcleo próximo de 100 % é a assinatura desse gargalo) ou subir duas instâncias (`cluster`/PM2) e verificar se a vazão máxima quase dobra.
-
-**L2 — Fila no pool de 10 conexões do MySQL.**
-- *Evidência:* com 100 VUs há até 90 requisições esperando conexão (`waitForConnections: true`, sem limite de fila), e a latência cresce na proporção dos VUs. Porém, com 50 VUs já havia 40 requisições na fila sem queda de vazão, então o pool **sozinho não explica** a perda a 100 VUs.
-- *Como validar:* repetir o teste com `connectionLimit` de 10, 25 e 50 e comparar o p95 em 100 VUs.
-
-**L3 — Instabilidade ambiental no patamar de 100 VUs** (vazão cai de ≈ 4.000 para ≈ 1.400 req/s por ≈ 35 s e volta sozinha, sem erros e com carga constante).
-- *Hipóteses:* k6, Node e MySQL disputando CPU na mesma máquina (o i5-13400 mistura núcleos de desempenho e de eficiência), pausa de coleta de lixo (GC) do Node ou escalonamento do Windows. Uma falha de lógica da aplicação seria menos provável, pois o comportamento se desfaz sem mudança de carga.
-- *Como validar:* repetir o teste pelo menos 3 vezes (se a queda mudar de horário ou sumir, é ambiental), rodar o k6 em outra máquina e iniciar o Node com `--trace-gc`.
-
-**L4 — Custo de autenticação irrealisticamente baixo.**
-- *Evidência no código:* o `SELECT` compara `senha` em texto puro (`WHERE email = ? AND senha = ?`) e o `bcrypt`, embora esteja no `package.json`, **não é usado** no `server.js`.
-- *Impacto esperado (estimativa, não medida):* com hash de senha, cada login passaria a gastar CPU na verificação e o gargalo mudaria para esse cálculo; a vazão máxima provavelmente seria ordens de grandeza menor.
-- *Como validar:* implementar a verificação com hash e repetir `login.js`.
-
-### 6.2 Cadastro
-
-**C1 — Custo da escrita durável (gravação do log de transações do InnoDB a cada `COMMIT`).**
-- *Evidência:* com 1 VU o Cadastro leva ≈ 8 ms por requisição contra ≈ 1,1 ms do Login (≈ 7 ms a mais por `SELECT` + `INSERT`). A vazão com 10 VUs é 6,2× a de 1 VU (confirmações de transações agrupadas) e depois satura em ≈ 1.000–1.300 req/s.
-- *Como validar:* verificar o valor de `innodb_flush_log_at_trx_commit` (1 = padrão, grava a cada commit); como experimento *apenas de diagnóstico*, repetir com o valor 2 e comparar. Acompanhar `Innodb_os_log_fsyncs` em `SHOW GLOBAL STATUS`.
-
-**C2 — Manutenção de três índices e crescimento da tabela.**
-- *Evidência:* cada `INSERT` atualiza a chave primária e os dois índices `UNIQUE` (`email` e `cpf`). No patamar de 100 VUs, com carga constante, a vazão cai de ≈ 1.570 para ≈ 1.040 req/s e a latência sobe de 63 ms para 96 ms enquanto a tabela cresce (≈ 308.800 linhas ao final).
-- *Como validar:* repetir o teste com a tabela já populada e vazia e comparar; olhar `SHOW ENGINE INNODB STATUS` durante o patamar de 100 VUs.
-
-**C3 — Paradas curtas (3–4 s) em t ≈ 212 s e t ≈ 282 s.**
-- *Evidência:* vazão a 25 req/s e latência máxima de 1.150 ms (50 VUs); depois 226–404 req/s e 839 ms. Os dois eventos estão ≈ 70 s distantes, mas **dois pontos não provam periodicidade**.
-- *Hipóteses:* descarga em rajada de páginas/log do InnoDB (checkpoint), pausa de GC do Node ou outro processo do Windows.
-- *Como validar:* ativar o *slow query log* (`long_query_time = 0.2`), acompanhar `Innodb_buffer_pool_pages_flushed` e rodar o Node com `--trace-gc`; repetir e ver se as paradas reaparecem nos mesmos instantes.
-
-**C4 — Fila no pool de 10 conexões, com duas passagens por requisição.**
-- *Evidência:* a requisição faz duas chamadas separadas a `pool.query` (verificação de duplicidade e `INSERT`), sem transação. Com 100 VUs, 100 requisições disputam 10 conexões e cada uma entra na fila duas vezes; a latência cresce na proporção dos VUs.
-- *Como validar:* variar o `connectionLimit` (como em L2) e testar uma versão que faça só o `INSERT`, tratando o erro de duplicidade (`ER_DUP_ENTRY`) com a resposta `409`. Isso elimina uma ida ao banco por requisição e também a janela de corrida entre a verificação e a inserção.
+| ID | Serviço | Hipótese de gargalo | Evidência principal |
+|---|---|---|---|
+| L1 | Login | CPU do Node (thread única) como teto de vazão | Vazão estaciona em ≈ 4.100 req/s a partir de 50 VUs, com consulta trivial |
+| L2 | Login | Fila no pool de 10 conexões do MySQL | Até 90 requisições esperando conexão com 100 VUs; latência cresce com os VUs |
+| L3 | Login | Instabilidade ambiental no patamar de 100 VUs | Vazão cai de ≈ 4.000 para ≈ 1.400 req/s por ≈ 35 s e volta sozinha, sem erros |
+| L4 | Login | Custo de autenticação irrealisticamente baixo (senha em texto puro) | `WHERE email = ? AND senha = ?`; o `bcrypt` não é usado |
+| C1 | Cadastro | Custo da escrita durável (commit no InnoDB) | ≈ 8 ms por requisição com 1 VU, contra ≈ 1,1 ms do Login |
+| C2 | Cadastro | Manutenção de 3 índices e crescimento da tabela | Vazão cai de ≈ 1.570 para ≈ 1.040 req/s no patamar de 100 VUs |
+| C3 | Cadastro | Paradas curtas (3–4 s) em t ≈ 212 s e t ≈ 282 s | Vazão a 25 req/s e latência máxima de 1.150 ms |
+| C4 | Cadastro | Fila no pool, com duas passagens por requisição | Duas chamadas `pool.query` por requisição; latência proporcional aos VUs |
 
 ---
 
@@ -303,6 +326,9 @@ k6 run --summary-export=resultados/2026-11-09/cadastro-resumo.json --out json=re
 node analisar.js resultados/2026-11-09/login.json
 node analisar.js resultados/2026-11-09/cadastro.json
 
+# Gera os gráficos em graficos/2026-11-09/
+pip install matplotlib
+python gerar_graficos.py 2026-11-09
 ```
 
 Opções dos scripts k6 (`-e NOME=valor`): `BASE_URL` (padrão `http://localhost:3000`), `STAGES` (padrão `1,10,50,100`) e `THINK_TIME` (padrão `0`).
