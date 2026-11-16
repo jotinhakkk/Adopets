@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const catalogo = document.getElementById('catalogo');
+  const  catalogo = document.getElementById('catalogo');
 
   // Fazer uma requisição para obter o catálogo de animais
   fetch('/api/animais')
